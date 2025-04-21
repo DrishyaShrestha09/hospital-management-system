@@ -54,16 +54,16 @@ public class LoginServlet extends HttpServlet {
                     String role = rs.getString("role");
                     switch (role) {
                         case "admin":
-                            response.sendRedirect(request.getContextPath() + "/index.jsp");
+                            response.sendRedirect(request.getContextPath() + "/index.jsp?login=success");
                             break;
                         case "doctor":
-                            response.sendRedirect(request.getContextPath() + "/view/pagesJsp/doctor/doctorDashboard.jsp");
+                            response.sendRedirect(request.getContextPath() + "/view/pagesJsp/doctor/doctorDashboard.jsp?login=success");
                             break;
                         case "patient":
-                            response.sendRedirect(request.getContextPath() + "/view/pagesJsp/patient/patientDashboard.jsp");
+                            response.sendRedirect(request.getContextPath() + "/view/pagesJsp/patient/patientDashboard.jsp?login=success");
                             break;
                         default:
-                            response.sendRedirect(request.getContextPath() + "/user/dashboard.jsp");
+                            response.sendRedirect(request.getContextPath() + "/user/dashboard.jsp?login=success");
                             break;
                     }
                 } else {

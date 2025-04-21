@@ -56,6 +56,35 @@
         .appointment-actions button {
             margin-right: 8px;
         }
+         .toast {
+             visibility: hidden;
+             min-width: 250px;
+             margin-left: -125px;
+             background-color: #4CAF50;
+             color: white;
+             text-align: center;
+             border-radius: 2px;
+             padding: 16px;
+             position: fixed;
+             z-index: 1;
+             left: 50%;
+             bottom: 30px;
+             font-size: 17px;
+         }
+        .toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+
+
     </style>
 </head>
 
@@ -119,7 +148,8 @@
 </div>
 
 <jsp:include page="/view/pagesJsp/footer.jsp" />
-
+<!-- Toast Notification -->
+<div id="toast" class="toast"></div>
 <script>
     function updateStatus(appointmentId, newStatus) {
         // Call a backend endpoint with AJAX or form
@@ -131,6 +161,19 @@
         // Open a modal or redirect to details page
         alert("Open details modal for appointment ID: " + id);
     }
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("login") === "success") {
+        const toast = document.getElementById("toast");
+        toast.textContent = "Login successful!";
+        toast.className = "toast show";
+        setTimeout(function () {
+            toast.className = toast.className.replace("show", "");
+        }, 3000);
+    }
+
 </script>
 </body>
 </html>
+
+
