@@ -2,7 +2,7 @@
 <footer class="footer">
     <div class="footer-container">
         <div class="footer-section">
-            <h3>HospitalSys</h3>
+            <h3>NetruDoc</h3>
             <p>Connecting patients with healthcare professionals for better care.</p>
         </div>
 
@@ -28,7 +28,7 @@
         <div class="footer-section">
             <h4>Contact Us</h4>
             <p>Email: support@netrudoc.com</p>
-            <p>Phone: +1 (555) 123-4567</p>
+            <p>Phone: +977 9800000000</p>
             <div class="social-icons">
                 <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
                 <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
@@ -39,7 +39,7 @@
     </div>
 
     <div class="footer-bottom">
-        <p>&copy; <%= Calendar.getInstance().get(Calendar.YEAR) %> HospitalSys. All rights reserved.</p>
+        <p>&copy; <%= Calendar.getInstance().get(Calendar.YEAR) %> NetruDoc. All rights reserved.</p>
     </div>
 </footer>
 

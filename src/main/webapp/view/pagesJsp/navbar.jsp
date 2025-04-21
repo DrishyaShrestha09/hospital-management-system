@@ -4,7 +4,7 @@
         <!-- Logo -->
         <a href="${pageContext.request.contextPath}/index.jsp" class="navbar-logo">
             <img src="${pageContext.request.contextPath}" alt="" height="30" />
-            <span class="logo-text">HospitalSys</span>
+            <span class="logo-text">NetruDoc</span>
         </a>
 
         <!-- Navigation Links -->
@@ -19,9 +19,9 @@
                 <a href="${pageContext.request.contextPath}/view/pagesJsp/signup.jsp" class="nav-link">Signup</a>
             </li>
             <%--Remove this from here and add in doctor and patient nav bar--%>
-            <li class="nav-item">
-                <a href= "${pageContext.request.contextPath}/auth/logout" class="nav-link">Logout</a>
-            </li>
+<%--            <li class="nav-item">--%>
+<%--                <a href= "${pageContext.request.contextPath}/auth/logout" class="nav-link">Logout</a>--%>
+<%--            </li>--%>
         </ul>
 
     </div>

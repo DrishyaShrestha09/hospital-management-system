@@ -1,5 +1,4 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ include file="/view/pagesJsp/navbar.jsp" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,7 +10,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-
+<%@ include file="/view/pagesJsp/navbar.jsp" %>
 <div class="home-page">
   <section class="hero-section">
     <div class="hero-content">
