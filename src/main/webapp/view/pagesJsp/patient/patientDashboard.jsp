@@ -8,6 +8,36 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/view/css/navigation.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/view/css/footer.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/view/css/appointment.css">
+    <style>
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            margin-left: -125px;
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            border-radius: 2px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            font-size: 17px;
+        }
+        .toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
+
+    </style>
 </head>
 <body>
 
@@ -102,6 +132,20 @@
     </div>
 </div>
 
+<!-- Toast Notification -->
+<div id="toast" class="toast"></div>
+
 <jsp:include page="/view/pagesJsp/footer.jsp" />
+<script>
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("login") === "success") {
+        const toast = document.getElementById("toast");
+        toast.textContent = "Login successful!";
+        toast.className = "toast show";
+        setTimeout(function () {
+            toast.className = toast.className.replace("show", "");
+        }, 3000);
+    }
+</script>
 </body>
 </html>
