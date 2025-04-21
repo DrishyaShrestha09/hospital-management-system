@@ -68,12 +68,12 @@ public class LoginServlet extends HttpServlet {
                     }
                 } else {
                     // If password is incorrect, show an error message
-                    request.setAttribute("error", "Invalid email or password.");
+                    request.setAttribute("passwordError", "Invalid password.");
                     request.getRequestDispatcher("/view/pagesJsp/login.jsp").forward(request, response);
                 }
             } else {
                 // If user is not found in the database, show an error message
-                request.setAttribute("error", "Invalid email or password.");
+                request.setAttribute("emailError", "Invalid email");
                 request.getRequestDispatcher("/view/pagesJsp/login.jsp").forward(request, response);
             }
 
