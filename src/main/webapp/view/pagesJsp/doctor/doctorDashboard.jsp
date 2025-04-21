@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<jsp:include page="/view/pagesJsp/navbar.jsp" />
+<jsp:include page="/view/pagesJsp/doctor/doctorNav.jsp" />
 <html>
 <head>
     <title>Doctor Dashboard</title>

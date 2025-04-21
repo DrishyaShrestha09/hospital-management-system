@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,7 +11,7 @@
 </head>
 <body>
 
-<jsp:include page="/view/pagesJsp/navbar.jsp" />
+<jsp:include page="/view/pagesJsp/patient/patientNav.jsp" />
 
 <div class="book-appointment-page">
     <div class="book-appointment-container">
