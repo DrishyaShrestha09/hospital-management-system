@@ -1,37 +1,35 @@
-package model;
+package com.example.hospital_management_system.model;
 
 import java.time.LocalDate;
 
 public class Appointment {
-    private int id;
-    private int patientId;
-    private int doctorId;
-    private LocalDate date;
-    private String status;
+    private int appointmentId;
+    private  LocalDate appointmentDate;
+    private String cause;
 
     public Appointment() {}
 
-    public Appointment(int id, int patientId, int doctorId, LocalDate date, String status) {
-        this.id = id;
-        this.patientId = patientId;
-        this.doctorId = doctorId;
-        this.date = date;
-        this.status = status;
+    public int getAppointmentId() {
+        return appointmentId;
     }
 
-    // Getters and Setters
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public void setAppointmentId(int appointmentId) {
+        this.appointmentId = appointmentId;
+    }
 
-    public int getPatientId() { return patientId; }
-    public void setPatientId(int patientId) { this.patientId = patientId; }
+    public LocalDate getAppointmentDate() {
+        return appointmentDate;
+    }
 
-    public int getDoctorId() { return doctorId; }
-    public void setDoctorId(int doctorId) { this.doctorId = doctorId; }
+    public void setAppointmentDate(LocalDate appointmentDate) {
+        this.appointmentDate = appointmentDate;
+    }
 
-    public LocalDate getDate() { return date; }
-    public void setDate(LocalDate date) { this.date = date; }
+    public String getCause() {
+        return cause;
+    }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public void setCause(String cause) {
+        this.cause = cause;
+    }
 }
