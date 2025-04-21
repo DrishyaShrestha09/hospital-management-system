@@ -1,6 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.*, java.text.SimpleDateFormat" %>
-<jsp:include page="/view/pagesJsp/navbar.jsp" />
 
 <html>
 <head>
@@ -11,6 +10,8 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/view/css/appointment.css">
 </head>
 <body>
+
+<jsp:include page="/view/pagesJsp/patient/patientNav.jsp" />
 
 <%
     String userName = (String) request.getAttribute("user_name");
