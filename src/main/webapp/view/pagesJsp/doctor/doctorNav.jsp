@@ -13,12 +13,12 @@
 <%--        <a href="${pageContext.request.contextPath}/index.jsp" class="nav-link">Home</a>--%>
 <%--      </li>--%>
       <li class="nav-item">
-        <a href="${pageContext.request.contextPath}/view/pagesJsp/doctor/doctorDashboard.jsp" class="nav-link">Doctor dashboard</a>
+        <a href="${pageContext.request.contextPath}/DocHome" class="nav-link">Doctor dashboard</a>
       </li>
       <li class="nav-item">
-        <a href="${pageContext.request.contextPath}/view/pagesJsp/doctor/schedule.jsp" class="nav-link">Schedule</a>
+        <a href="${pageContext.request.contextPath}/DoctorScheduleServlet" class="nav-link">Schedule</a>
       </li><li class="nav-item">
-        <a href="${pageContext.request.contextPath}/view/pagesJsp/doctor/doctorProfile.jsp" class="nav-link">Profile</a>
+        <a href="${pageContext.request.contextPath}/DoctorProfile" class="nav-link">Profile</a>
       </li>
       <li class="nav-item">
         <a href= "${pageContext.request.contextPath}/auth/logout" class="nav-link">Logout</a>

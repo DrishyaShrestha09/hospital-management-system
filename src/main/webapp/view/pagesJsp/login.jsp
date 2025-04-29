@@ -82,7 +82,7 @@
 
                 <button type="submit">Login</button>
 
-                <p>Don't have an account? <a href="signup.jsp">Sign up</a></p>
+                <p>Don't have an account? <a href="RegisterServlet">Sign up</a></p>
             </form>
         </div>
 

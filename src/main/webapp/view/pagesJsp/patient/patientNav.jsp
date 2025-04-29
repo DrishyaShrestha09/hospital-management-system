@@ -10,12 +10,12 @@
         <!-- Navigation Links -->
         <ul class="nav-menu" id="navMenu">
             <li class="nav-item">
-                <a href="${pageContext.request.contextPath}/view/pagesJsp/patient/patientDashboard.jsp" class="nav-link">User Dashboard</a>
+                <a href="${pageContext.request.contextPath}/PatientDashboardServlet" class="nav-link">User Dashboard</a>
             </li>
             <li class="nav-item">
-                <a href="${pageContext.request.contextPath}/view/pagesJsp/patient/book-appointment.jsp" class="nav-link">Book Appointment</a>
+                <a href="${pageContext.request.contextPath}/BookAppointmentServlet" class="nav-link">Book Appointment</a>
             </li><li class="nav-item">
-            <a href="${pageContext.request.contextPath}/view/pagesJsp/patient/patientProfile.jsp" class="nav-link">Profile</a>
+            <a href="${pageContext.request.contextPath}/PatientProfileServlet" class="nav-link">Profile</a>
         </li>
             <li class="nav-item">
                 <a href= "${pageContext.request.contextPath}/auth/logout" class="nav-link">Logout</a>

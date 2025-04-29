@@ -37,6 +37,21 @@
             to {bottom: 0; opacity: 0;}
         }
 
+        .appointment-btn {
+            display: inline-block;
+            background-color: #007BFF;
+            color: #ffffff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .appointment-btn:hover {
+            background-color: #0056b3;
+        }
+
     </style>
 </head>
 <body>
@@ -76,9 +91,10 @@
     </div>
 
     <div class="dashboard-actions">
-        <a href="book-appointment.jsp" class="btn">Book New Appointment</a>
-        <a href="medicalHistory.jsp" class="btn-outline">View Medical History</a>
+        <a href="BookAppointmentServlet" class="appointment-btn">Book New Appointment</a>
     </div>
+
+
 
     <div class="dashboard-stats">
         <div class="stat-card">
