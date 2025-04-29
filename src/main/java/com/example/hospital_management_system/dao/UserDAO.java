@@ -15,11 +15,9 @@ public class UserDAO {
         try (Connection con = DBConnectionUtils.getConnection();
              PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
-
             ps.setString(1, user.getName());
             ps.setString(2, user.getEmail());
-            ps.setString(3, hashedPassword);
+            ps.setString(3, user.getPassword()); // Use already hashed password
             ps.setString(4, user.getPhone());
             ps.setString(5, user.getAddress());
             ps.setString(6, user.getGender());
