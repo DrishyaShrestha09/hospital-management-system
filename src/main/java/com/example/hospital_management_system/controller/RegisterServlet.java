@@ -2,6 +2,7 @@ package com.example.hospital_management_system.controller;
 
 import com.example.hospital_management_system.dao.UserDAO;
 import com.example.hospital_management_system.model.Users;
+import com.example.hospital_management_system.utils.PasswordHashUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
@@ -10,6 +11,9 @@ import java.io.IOException;
 
 @WebServlet("/RegisterServlet")
 public class RegisterServlet extends HttpServlet {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.getRequestDispatcher("/view/pagesJsp/signup.jsp").forward(request, response);
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -29,7 +33,8 @@ public class RegisterServlet extends HttpServlet {
         Users user = new Users();
         user.setName(firstName + " " + lastName);
         user.setEmail(email);
-        user.setPassword(password);
+        String hashedPassword = PasswordHashUtils.hashPassword(password);
+        user.setPassword(hashedPassword);
         user.setPhone(phone);
         user.setAddress(address);
         user.setGender(gender);
@@ -40,7 +45,7 @@ public class RegisterServlet extends HttpServlet {
             user.setRole(role);
         } catch (IllegalArgumentException e) {
             request.setAttribute("errorMessage", "Invalid user role selected.");
-            request.getRequestDispatcher("view/pagesJsp/signup.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/pagesJsp/signup.jsp").forward(request, response);
             return;
         }
 
@@ -48,10 +53,11 @@ public class RegisterServlet extends HttpServlet {
         int userId = UserDAO.registerUser(user);
 
         if (userId > 0) {
-            response.sendRedirect("view/pagesJsp/login.jsp");
+            response.sendRedirect(request.getContextPath() + "/LoginServlet");
         } else {
             request.setAttribute("errorMessage", "Registration failed. Try again.");
-            request.getRequestDispatcher("view/pagesJsp/signup.jsp").forward(request, response);
+            request.getRequestDispatcher("/view/pagesJsp/signup.jsp").forward(request, response);
+
         }
     }
 }
