@@ -46,7 +46,7 @@
 
                 <button type="submit">Sign Up</button>
 
-                <p>Already have an account? <a href="login.jsp">Login</a></p>
+                <p>Already have an account? <a href="LoginServlet">Login</a></p>
             </form>
         </div>
 

@@ -13,15 +13,11 @@
                 <a href="${pageContext.request.contextPath}/index.jsp" class="nav-link">Home</a>
             </li>
             <li class="nav-item">
-                <a href="${pageContext.request.contextPath}/view/pagesJsp/login.jsp" class="nav-link">Login</a>
+                <a href="${pageContext.request.contextPath}/LoginServlet" class="nav-link">Login</a>
             </li>
             <li class="nav-item">
-                <a href="${pageContext.request.contextPath}/view/pagesJsp/signup.jsp" class="nav-link">Signup</a>
+                <a href="${pageContext.request.contextPath}/RegisterServlet" class="nav-link">Signup</a>
             </li>
-            <%--Remove this from here and add in doctor and patient nav bar--%>
-<%--            <li class="nav-item">--%>
-<%--                <a href= "${pageContext.request.contextPath}/auth/logout" class="nav-link">Logout</a>--%>
-<%--            </li>--%>
         </ul>
 
     </div>

@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/view/css/appointment.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/view/css/navigation.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/view/css/footer.css">
-    <script defer src="scripts/book-appointment.js"></script>
 </head>
 <body>
 

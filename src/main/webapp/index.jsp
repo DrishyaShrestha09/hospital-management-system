@@ -9,6 +9,45 @@
   <link rel="stylesheet" href="${pageContext.request.contextPath}/view/css/footer.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
+<style>
+
+  .btn {
+    display: inline-block;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  /* Outline button */
+  .btn-outline {
+    color: #007bff;
+    border: 2px solid #007bff;
+    background-color: transparent;
+  }
+
+  .btn-outline:hover {
+    background-color: #007bff;
+    color: #fff;
+  }
+
+  /* Primary button */
+  .btn-primary {
+    color: #fff;
+    background-color: #007bff;
+    border: 2px solid #007bff;
+  }
+
+  .btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+  }
+
+</style>
 <body>
 <%@ include file="/view/pagesJsp/navbar.jsp" %>
 <div class="home-page">
@@ -19,8 +58,8 @@
         Connect with trusted doctors and book appointments online with ease.
       </p>
       <div class="hero-buttons animate-slide-up-delay-2">
-        <a href="${pageContext.request.contextPath}/view/pagesJsp/login.jsp" class="btn btn-outline">Login</a>
-        <a href="${pageContext.request.contextPath}/view/pagesJsp/signup.jsp" class="btn btn-primary">Get Started</a>
+        <a href="${pageContext.request.contextPath}/LoginServlet" class="btn btn-outline">Login</a>
+        <a href="${pageContext.request.contextPath}/RegisterServlet" class="btn btn-primary">Get Started</a>
       </div>
     </div>
     <div class="hero-image animate-fade-in">
@@ -48,6 +87,14 @@
         <p>Access your medical history and prescriptions anytime, anywhere.</p>
       </div>
       <div class="feature-card animate-slide-up-delay-4">
+        <div class="feature-icon"><i class="fa-solid fa-headset"></i></div>
+        <h3>24/7 Support</h3>
+        <p>Get access to support and help whenever you need it.</p>
+      </div><div class="feature-card animate-slide-up-delay-4">
+        <div class="feature-icon"><i class="fa-solid fa-hospital"></i></div>
+        <h3>Multiple Specialties</h3>
+        <p>Find doctors from various specialties all in one platform.</p>
+      </div><div class="feature-card animate-slide-up-delay-4">
         <div class="feature-icon"><i class="fas fa-comments"></i></div>
         <h3>Pre-Consultation Forms</h3>
         <p>Fill out pre-consultation forms to help doctors understand your condition better.</p>
@@ -115,7 +162,7 @@
     <div class="cta-content">
       <h2>Ready to Get Started?</h2>
       <p>Join thousands of users who have simplified their healthcare experience with NetruDoc.</p>
-      <a href="${pageContext.request.contextPath}/view/pagesJsp/signup.jsp" style ="color: white"  >Create an Account</a>
+      <a href="${pageContext.request.contextPath}/RegisterServlet" style ="color: white"  >Create an Account</a>
     </div>
   </section>
 </div>
