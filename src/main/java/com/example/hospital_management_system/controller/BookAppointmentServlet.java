@@ -1,45 +1,72 @@
 package com.example.hospital_management_system.controller;
 
+import com.example.hospital_management_system.dao.AppointmentDAO;
+import com.example.hospital_management_system.model.Doctor;
 import com.example.hospital_management_system.model.Users;
 import com.example.hospital_management_system.services.AuthService;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 import java.io.IOException;
+import java.sql.Date;
+import java.util.List;
 
 @WebServlet(name = "BookAppointmentServlet", value = "/BookAppointmentServlet")
 public class BookAppointmentServlet extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Check if the user is authenticated and is a doctor
         if (AuthService.isAuthenticated(request) && AuthService.isPatient(request)) {
-            // Get the user from the session
             Users user = AuthService.getCurrentUser(request);
-
-            // Set user attribute and forward to doctor's dashboard
             request.setAttribute("user", user);
+
+            // Fetch available doctors
+            List<Doctor> doctors = AppointmentDAO.getAllDoctors(); // Fetch doctors from DAO
+            request.setAttribute("doctors", doctors);
+
             request.getRequestDispatcher("/view/pagesJsp/patient/book-appointment.jsp").forward(request, response);
         } else {
-            // Redirect unauthenticated users or non-doctors to login
             response.sendRedirect("LoginServlet");
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Check if the user is authenticated and is a doctor
         if (AuthService.isAuthenticated(request) && AuthService.isPatient(request)) {
-            // Get the user from the session
             Users user = AuthService.getCurrentUser(request);
+            int userId = user.getUserId();
 
-            // Set user attribute and forward to doctor's dashboard
+            // Retrieve form data
+            String doctorIdStr = request.getParameter("doctorId");
+            String dateStr = request.getParameter("date");
+            String timeSlot = request.getParameter("timeSlot");
+            String reason = request.getParameter("reason");
+
+            if (doctorIdStr == null || dateStr == null || timeSlot == null || reason == null || doctorIdStr.isEmpty() || dateStr.isEmpty() || timeSlot.isEmpty() || reason.isEmpty()) {
+                request.setAttribute("error", "Please fill in all the fields.");
+                request.getRequestDispatcher("/view/pagesJsp/patient/book-appointment.jsp").forward(request, response);
+                return;
+            }
+
+            int doctorId = Integer.parseInt(doctorIdStr);
+            Date appointmentDate = Date.valueOf(dateStr);
+
+            // Call DAO to save appointment
+            AppointmentDAO appointmentDAO = new AppointmentDAO();
+            boolean isBooked = appointmentDAO.bookAppointment(userId, doctorId, appointmentDate, reason, timeSlot);
+
+            if (isBooked) {
+                request.setAttribute("message", "Appointment booked successfully!");
+            } else {
+                request.setAttribute("error", "Failed to book appointment. Try again.");
+            }
+
+            // Forward back to booking page (or to a confirmation page if you like)
             request.setAttribute("user", user);
             request.getRequestDispatcher("/view/pagesJsp/patient/book-appointment.jsp").forward(request, response);
 
         } else {
-            // Redirect unauthenticated users or non-doctors to login
             response.sendRedirect("LoginServlet");
         }
     }
-
 }

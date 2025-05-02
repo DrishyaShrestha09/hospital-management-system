@@ -1,4 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page import="java.util.List" %>
+<%@ page import="com.example.hospital_management_system.model.Doctor" %>
 
 <!DOCTYPE html>
 <html>
@@ -7,10 +9,42 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/view/css/appointment.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/view/css/navigation.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/view/css/footer.css">
+    <style>
+        .doctor-card.selected {
+            border: 2px solid #007bff;
+            background-color: #f0f8ff;
+        }
+
+        .time-slot.selected {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .message {
+            padding: 10px;
+            margin: 15px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 <body>
 
-<jsp:include page="/view/pagesJsp/patient/patientNav.jsp" />
+<jsp:include page="/view/pagesJsp/patient/patientNav.jsp"/>
 
 <div class="book-appointment-page">
     <div class="book-appointment-container">
@@ -19,40 +53,53 @@
             <p>Schedule a visit with one of our healthcare professionals</p>
         </div>
 
-        <div id="alert-container"></div>
-
         <div class="card book-appointment-card">
-            <div class="appointment-steps">
-                <div class="step active" id="step-1">
-                    <div class="step-number">1</div>
-                    <div class="step-text">Select Doctor & Date</div>
-                </div>
-                <div class="step-connector"></div>
-                <div class="step" id="step-2">
-                    <div class="step-number">2</div>
-                    <div class="step-text">Choose Time Slot</div>
-                </div>
-                <div class="step-connector"></div>
-                <div class="step" id="step-3">
-                    <div class="step-number">3</div>
-                    <div class="step-text">Appointment Details</div>
-                </div>
-            </div>
 
-            <form id="appointment-form">
-                <%-- Step 1 --%>
+            <!-- Show success or error messages -->
+            <%
+                String successMsg = (String) request.getAttribute("message");
+                String errorMsg = (String) request.getAttribute("error");
+
+                // For session messages after redirect (optional)
+                if (successMsg == null && session.getAttribute("message") != null) {
+                    successMsg = (String) session.getAttribute("message");
+                    session.removeAttribute("message");
+                }
+
+                if (errorMsg == null && session.getAttribute("error") != null) {
+                    errorMsg = (String) session.getAttribute("error");
+                    session.removeAttribute("error");
+                }
+
+                if (successMsg != null) {
+            %>
+            <div class="message success"><%= successMsg %></div>
+            <% } else if (errorMsg != null) { %>
+            <div class="message error"><%= errorMsg %></div>
+            <% } %>
+
+            <form id="appointment-form" method="post" action="${pageContext.request.contextPath}/BookAppointmentServlet">
+                <!-- Step 1 -->
                 <div class="appointment-step-content" id="form-step-1">
                     <h3>Select a Doctor</h3>
                     <div class="doctors-grid">
-                        <c:forEach var="doctor" items="${doctors}">
-                            <div class="doctor-card" data-id="${doctor.id}" data-name="${doctor.name}">
-                                <div class="doctor-image">
-                                    <img src="${doctor.image}" alt="${doctor.name}" />
-                                </div>
-                                <h4>${doctor.name}</h4>
-                                <p>${doctor.specialty}</p>
-                            </div>
-                        </c:forEach>
+                        <%
+                            List<Doctor> doctors = (List<Doctor>) request.getAttribute("doctors");
+                            if (doctors != null && !doctors.isEmpty()) {
+                                for (Doctor doctor : doctors) {
+                        %>
+                        <div class="doctor-card" data-id="<%= doctor.getDoctorId() %>" data-name="<%= doctor.getSpecialty() %>">
+                            <h4><%= doctor.getSpecialty() %></h4>
+                            <p>Experience: <%= doctor.getExperience() %> years</p>
+                        </div>
+                        <%
+                            }
+                        } else {
+                        %>
+                        <p>No doctors available.</p>
+                        <%
+                            }
+                        %>
                     </div>
 
                     <label for="date">Select Date</label>
@@ -63,11 +110,16 @@
                     </div>
                 </div>
 
-                <%-- Step 2 (hidden initially) --%>
+                <!-- Step 2 -->
                 <div class="appointment-step-content hidden" id="form-step-2">
                     <h3>Select a Time Slot</h3>
-                    <p id="time-slot-info"></p>
-                    <div class="time-slots-grid" id="time-slots-container"></div>
+                    <div class="time-slots-grid" id="time-slots-container">
+                        <button type="button" class="time-slot" data-time="9:00 AM">9:00 AM</button>
+                        <button type="button" class="time-slot" data-time="10:00 AM">10:00 AM</button>
+                        <button type="button" class="time-slot" data-time="11:00 AM">11:00 AM</button>
+                        <button type="button" class="time-slot" data-time="2:00 PM">2:00 PM</button>
+                        <button type="button" class="time-slot" data-time="3:00 PM">3:00 PM</button>
+                    </div>
 
                     <div class="step-actions">
                         <button type="button" onclick="prevStep()">Back</button>
@@ -75,27 +127,85 @@
                     </div>
                 </div>
 
-                <%-- Step 3 (hidden initially) --%>
+                <!-- Step 3 -->
                 <div class="appointment-step-content hidden" id="form-step-3">
-                    <h3>Appointment Summary</h3>
-                    <div id="appointment-summary"></div>
-
-                    <label for="reason">Reason for Visit <span class="required">*</span></label>
-                    <textarea id="reason" name="reason" required rows="4"
-                              placeholder="Please describe your symptoms or reason for the appointment in detail"></textarea>
-                    <p class="input-help">Minimum 10 characters required</p>
+                    <h3>Reason for Appointment</h3>
+                    <textarea name="reason" required placeholder="Why do you need to see the doctor?"></textarea>
 
                     <div class="step-actions">
                         <button type="button" onclick="prevStep()">Back</button>
-                        <button type="button" onclick="confirmBooking()">Confirm Booking</button>
+                        <button type="submit">Confirm Appointment</button>
                     </div>
                 </div>
+
+                <!-- Hidden Inputs -->
+                <input type="hidden" name="doctorId" id="doctorId"/>
+                <input type="hidden" name="timeSlot" id="timeSlot"/>
             </form>
         </div>
     </div>
 </div>
 
+<jsp:include page="/view/pagesJsp/footer.jsp"/>
 
-<jsp:include page="/view/pagesJsp/footer.jsp" />
+<script>
+    let currentStep = 1;
+
+    function nextStep() {
+        if (currentStep === 1) {
+            const selectedDoctor = document.querySelector('.doctor-card.selected');
+            if (selectedDoctor) {
+                document.getElementById('doctorId').value = selectedDoctor.getAttribute('data-id');
+                document.getElementById('form-step-1').classList.add('hidden');
+                document.getElementById('form-step-2').classList.remove('hidden');
+                currentStep++;
+            } else {
+                alert("Please select a doctor.");
+            }
+        } else if (currentStep === 2) {
+            const selectedTimeSlot = document.querySelector('.time-slot.selected');
+            if (selectedTimeSlot) {
+                document.getElementById('timeSlot').value = selectedTimeSlot.getAttribute('data-time');
+                document.getElementById('form-step-2').classList.add('hidden');
+                document.getElementById('form-step-3').classList.remove('hidden');
+                currentStep++;
+            } else {
+                alert("Please select a time slot.");
+            }
+        }
+    }
+
+    function prevStep() {
+        if (currentStep === 2) {
+            document.getElementById('form-step-2').classList.add('hidden');
+            document.getElementById('form-step-1').classList.remove('hidden');
+            currentStep--;
+        } else if (currentStep === 3) {
+            document.getElementById('form-step-3').classList.add('hidden');
+            document.getElementById('form-step-2').classList.remove('hidden');
+            currentStep--;
+        }
+    }
+
+    window.onload = function () {
+        // Doctor selection
+        document.querySelectorAll('.doctor-card').forEach(card => {
+            card.addEventListener('click', function () {
+                document.querySelectorAll('.doctor-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+
+        // Time slot selection
+        document.querySelectorAll('.time-slot').forEach(slot => {
+            slot.addEventListener('click', function () {
+                document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+    }
+</script>
+
+
 </body>
 </html>

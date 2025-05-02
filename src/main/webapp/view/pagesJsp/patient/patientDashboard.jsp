@@ -86,7 +86,7 @@
 
 <div class="dashboard-container">
     <div class="dashboard-header">
-        <h1>Welcome, <%= userName %></h1>
+        <h1>Welcome, ${currentUser.name}</h1>
         <p>Manage your appointments and health records</p>
     </div>
 

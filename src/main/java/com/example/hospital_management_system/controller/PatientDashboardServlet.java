@@ -1,11 +1,14 @@
 package com.example.hospital_management_system.controller;
 
 import com.example.hospital_management_system.model.Users;
+import com.example.hospital_management_system.services.AppointmentService;
 import com.example.hospital_management_system.services.AuthService;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 @WebServlet(name = "PatientDashboardServlet", value = "/PatientDashboardServlet")
 public class PatientDashboardServlet extends HttpServlet {
