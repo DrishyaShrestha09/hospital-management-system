@@ -45,20 +45,22 @@ public class LoginServlet extends HttpServlet {
                     user.setUserId(rs.getInt("user_id"));
                     user.setName(rs.getString("user_name"));
                     user.setEmail(rs.getString("user_email"));
-                    user.setRole(Users.Role.valueOf(rs.getString("role")));
+
+                    // Ensure the Role column in the database is named correctly
+                    user.setRole(Users.Role.valueOf(rs.getString("role").toUpperCase()));  // Adjusted column name and case
 
                     // Set session via AuthService
                     AuthService.createUserSession(request, user, 3600);  // 1 hour session
 
                     // Redirect based on role
                     switch (user.getRole()) {
-                        case admin:
+                        case ADMIN:
                             response.sendRedirect(request.getContextPath() + "/index.jsp?login=success");
                             break;
-                        case doctor:
+                        case DOCTOR:
                             response.sendRedirect(request.getContextPath() + "/DocHome");
                             break;
-                        case patient:
+                        case PATIENT:
                             response.sendRedirect(request.getContextPath() + "/PatientDashboardServlet");
                             break;
                         default:
