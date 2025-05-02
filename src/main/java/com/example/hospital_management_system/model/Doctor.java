@@ -6,8 +6,7 @@ public class Doctor {
     private int experience;
     private int departmentId;
 
-    public Doctor() {}
-
+    // Getters and Setters
     public int getDoctorId() {
         return doctorId;
     }
