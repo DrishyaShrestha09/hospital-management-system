@@ -15,6 +15,7 @@
     <maven.compiler.target>21</maven.compiler.target>
     <maven.compiler.source>21</maven.compiler.source>
     <junit.version>5.11.0</junit.version>
+      <jstl.version>2.0.0</jstl.version>
   </properties>
 
   <dependencies>
@@ -43,6 +44,11 @@
           <groupId>org.mindrot</groupId>
           <artifactId>jbcrypt</artifactId>
           <version>0.4</version>
+      </dependency>
+      <dependency>
+          <groupId>jakarta.servlet.jsp.jstl</groupId>
+          <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+          <version>3.0.1</version>
       </dependency>
   </dependencies>
 
