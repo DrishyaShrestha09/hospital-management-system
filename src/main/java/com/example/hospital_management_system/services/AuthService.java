@@ -54,7 +54,7 @@ public class AuthService {
         }
 
         Users user = (Users) session.getAttribute("user");
-        return user != null && user.getRole() == Users.Role.admin;
+        return user != null && user.getRole() == Users.Role.ADMIN;
     }
 
     public static boolean isDoctor(HttpServletRequest request) {
@@ -62,7 +62,7 @@ public class AuthService {
         if (session == null) return false;
 
         Users user = (Users) session.getAttribute("user");
-        return user != null && user.getRole() == Users.Role.doctor;
+        return user != null && user.getRole() == Users.Role.DOCTOR;
     }
 
     public static boolean isPatient(HttpServletRequest request) {
@@ -70,7 +70,7 @@ public class AuthService {
         if (session == null) return false;
 
         Users user = (Users) session.getAttribute("user");
-        return user != null && user.getRole() == Users.Role.patient;
+        return user != null && user.getRole() == Users.Role.PATIENT;
     }
 
     public static void createUserSession(HttpServletRequest request, Users user, int timeoutSeconds) {

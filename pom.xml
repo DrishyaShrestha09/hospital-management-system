@@ -15,6 +15,7 @@
     <maven.compiler.target>21</maven.compiler.target>
     <maven.compiler.source>21</maven.compiler.source>
     <junit.version>5.11.0</junit.version>
+      <jstl.version>2.0.0</jstl.version>
   </properties>
 
   <dependencies>
@@ -26,12 +27,6 @@
       <scope>test</scope>
     </dependency>
 
-      <dependency>
-          <groupId>jakarta.servlet</groupId>
-          <artifactId>jakarta.servlet-api</artifactId>
-          <version>5.0.0</version>
-          <scope>provided</scope>
-      </dependency>
 
       <dependency>
           <groupId>mysql</groupId>
@@ -44,6 +39,41 @@
           <artifactId>jbcrypt</artifactId>
           <version>0.4</version>
       </dependency>
+
+
+      <!-- Jakarta Servlet API (updated version for Jakarta EE 9) -->
+      <dependency>
+          <groupId>jakarta.servlet</groupId>
+          <artifactId>jakarta.servlet-api</artifactId>
+          <version>5.0.0</version>
+          <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+          <groupId>jakarta.servlet.jsp.jstl</groupId>
+          <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+          <version>3.0.0</version>
+      </dependency>
+
+      <dependency>
+          <groupId>org.glassfish.web</groupId>
+          <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+          <version>3.0.1</version>
+      </dependency>
+
+      <dependency>
+          <groupId>org.apache.taglibs</groupId>
+          <artifactId>taglibs-standard-spec</artifactId>
+          <version>1.2.5</version>
+      </dependency>
+
+      <dependency>
+          <groupId>org.apache.taglibs</groupId>
+          <artifactId>taglibs-standard-impl</artifactId>
+          <version>1.2.5</version>
+      </dependency>
+
+
   </dependencies>
 
 

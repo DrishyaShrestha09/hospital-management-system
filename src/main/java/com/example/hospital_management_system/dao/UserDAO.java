@@ -2,103 +2,122 @@ package com.example.hospital_management_system.dao;
 
 import com.example.hospital_management_system.model.Users;
 import com.example.hospital_management_system.utils.DBConnectionUtils;
-import org.mindrot.jbcrypt.BCrypt;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.sql.ResultSet;
 
 public class UserDAO {
 
-    // Register a new user (with hashed password)
+    /**
+     * Registers a new user in the database.
+     *
+     * @param user the user object containing user details
+     * @return the generated user ID or -1 if registration failed
+     */
     public static int registerUser(Users user) {
-        String sql = "INSERT INTO users(user_name, user_email, user_password, user_phone, user_address, user_gender, role, profile) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        int generatedId = -1;
+        String sql = "INSERT INTO users (user_name, user_email, user_password, user_phone, user_address, user_gender, role, profile) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection con = DBConnectionUtils.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = DBConnectionUtils.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            ps.setString(1, user.getName());
-            ps.setString(2, user.getEmail());
-            ps.setString(3, user.getPassword()); // Use already hashed password
-            ps.setString(4, user.getPhone());
-            ps.setString(5, user.getAddress());
-            ps.setString(6, user.getGender());
-            ps.setString(7, user.getRole().name());
-            ps.setBytes(8, user.getProfile());
+            stmt.setString(1, user.getName());
+            stmt.setString(2, user.getEmail());
+            stmt.setString(3, user.getPassword());
+            stmt.setString(4, user.getPhone());
+            stmt.setString(5, user.getAddress());
+            stmt.setString(6, user.getGender());
+            stmt.setString(7, user.getRole().name());
 
-            int rows = ps.executeUpdate();
+            // If no profile image is set, set it as null in the DB
+            if (user.getProfile() == null) {
+                stmt.setNull(8, java.sql.Types.BLOB);
+            } else {
+                stmt.setBytes(8, user.getProfile());
+            }
 
-            if (rows > 0) {
-                ResultSet rs = ps.getGeneratedKeys();
+            int affectedRows = stmt.executeUpdate();
+
+            if (affectedRows > 0) {
+                ResultSet rs = stmt.getGeneratedKeys();
                 if (rs.next()) {
-                    return rs.getInt(1); // return generated user ID
+                    generatedId = rs.getInt(1);
                 }
             }
 
-        } catch (SQLException e) {
-            System.err.println("Error while registering user: " + e.getMessage());
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            // Log the error for debugging purposes (e.g., using a logging framework)
+            e.printStackTrace();
         }
-
-        return -1; // Registration failed
+        return generatedId;
     }
 
-    // Login a user (by checking hashed password)
-    public static Users loginUser(String email, String plainPassword) {
-        Users user = getUserByEmail(email);
-
-        if (user != null && BCrypt.checkpw(plainPassword, user.getPassword())) {
-            return user;
-        }
-
-        return null;
-    }
-
-    // Get user by email
+    /**
+     * Retrieves a user by email.
+     *
+     * @param email the email of the user to be fetched
+     * @return the user object, or null if no user with the given email is found
+     */
     public static Users getUserByEmail(String email) {
+        Users user = null;
         String sql = "SELECT * FROM users WHERE user_email = ?";
 
-        try (Connection con = DBConnectionUtils.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection conn = DBConnectionUtils.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            ps.setString(1, email);
-            ResultSet rs = ps.executeQuery();
+            stmt.setString(1, email);
+            ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return extractUserFromResultSet(rs);
+                user = mapResultSetToUser(rs);
             }
 
-        } catch (SQLException e) {
-            System.err.println("Error while fetching user by email: " + e.getMessage());
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            // Log the error for debugging purposes (e.g., using a logging framework)
+            e.printStackTrace();
         }
-
-        return null;
+        return user;
     }
 
-    // Get user by ID
+    /**
+     * Retrieves a user by ID.
+     *
+     * @param id the ID of the user to be fetched
+     * @return the user object, or null if no user with the given ID is found
+     */
     public static Users getUserById(int id) {
+        Users user = null;
         String sql = "SELECT * FROM users WHERE user_id = ?";
 
-        try (Connection con = DBConnectionUtils.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection conn = DBConnectionUtils.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return extractUserFromResultSet(rs);
+                user = mapResultSetToUser(rs);
             }
 
-        } catch (SQLException e) {
-            System.err.println("Error while fetching user by ID: " + e.getMessage());
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            // Log the error for debugging purposes (e.g., using a logging framework)
+            e.printStackTrace();
         }
-
-        return null;
+        return user;
     }
 
-    private static Users extractUserFromResultSet(ResultSet rs) throws SQLException {
+    /**
+     * Maps a ResultSet row to a Users object.
+     *
+     * @param rs the ResultSet containing the user data
+     * @return a Users object populated with data from the ResultSet
+     * @throws Exception if there is an issue accessing the ResultSet data
+     */
+    private static Users mapResultSetToUser(ResultSet rs) throws Exception {
         Users user = new Users();
-
         user.setUserId(rs.getInt("user_id"));
         user.setName(rs.getString("user_name"));
         user.setEmail(rs.getString("user_email"));
@@ -106,15 +125,7 @@ public class UserDAO {
         user.setPhone(rs.getString("user_phone"));
         user.setAddress(rs.getString("user_address"));
         user.setGender(rs.getString("user_gender"));
-
-        // Convert string from DB to enum
-        String roleStr = rs.getString("role");
-        try {
-            user.setRole(Users.Role.valueOf(roleStr.toLowerCase()));
-        } catch (IllegalArgumentException e) {
-            user.setRole(null); // or handle unknown roles
-        }
-
+        user.setRole(Users.Role.valueOf(rs.getString("role")));
         user.setProfile(rs.getBytes("profile"));
 
         return user;

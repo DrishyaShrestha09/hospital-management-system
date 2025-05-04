@@ -1,8 +1,14 @@
 package com.example.hospital_management_system.model;
-import org.mindrot.jbcrypt.BCrypt;
+
+import com.example.hospital_management_system.utils.PasswordHashUtils;
+
 public class Users {
 
-    public enum Role {admin, doctor, patient}
+    public enum Role {
+        ADMIN,
+        DOCTOR,
+        PATIENT
+    }
 
     private int userId;
     private String name;
@@ -14,8 +20,7 @@ public class Users {
     private Role role;
     private byte[] profile;
 
-    public Users() {}
-
+    // Getters and Setters
     public int getUserId() {
         return userId;
     }
@@ -45,15 +50,9 @@ public class Users {
     }
 
     public void setPassword(String password) {
-        // Check if the password is already hashed (starts with $2a$)
-        if (password != null && !password.startsWith("$2a$")) {
-            // Hash the password with BCrypt
-            this.password = BCrypt.hashpw(password, BCrypt.gensalt(12));
-        } else {
-            // Password is already hashed or null
-            this.password = password;
-        }
+        this.password = password;
     }
+
     public String getPhone() {
         return phone;
     }
@@ -94,11 +93,13 @@ public class Users {
         this.profile = profile;
     }
 
-    public boolean verifyPassword(String plainTextPassword) {
-        if (this.password == null || plainTextPassword == null) {
-            return false;
-        }
-        return BCrypt.checkpw(plainTextPassword, this.password);
+    /**
+     * Verifies the given plain password against the hashed password.
+     *
+     * @param inputPassword the plain password entered by user
+     * @return true if password matches, false otherwise
+     */
+    public boolean verifyPassword(String inputPassword) {
+        return PasswordHashUtils.verifyPassword(inputPassword, this.password);
     }
-
 }

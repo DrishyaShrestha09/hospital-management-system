@@ -6,17 +6,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class DoctorDAO {
-    public static boolean addDoctor(int userId, int experience, String specialty) {
-        String sql = "INSERT INTO doctor (experience, specialty, user_id) VALUES (?, ?, ?)"; // Removed department_id
+public class PatientDAO {
+    public static boolean addPatient(int userId) {
+        String sql = "INSERT INTO patient (user_id) VALUES (?)";
 
         try (Connection conn = DBConnectionUtils.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, experience);
-            stmt.setString(2, specialty);
-            stmt.setInt(3, userId); // Set user_id as before
-
+            stmt.setInt(1, userId);
             return stmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
@@ -24,5 +21,4 @@ public class DoctorDAO {
         }
         return false;
     }
-
 }

@@ -54,14 +54,14 @@ public class DoctorProfileServlet extends HttpServlet {
             DoctorDAO dao = new DoctorDAO();
 
             // Update the doctor profile using DAO
-            boolean updated = dao.updateDoctorProfile(doctor);
+//            boolean updated = dao.updateDoctorProfile(doctor);
 
             // Set success or failure message as a request attribute
-            if (updated) {
-                request.setAttribute("successMessage", "Profile updated successfully.");
-            } else {
-                request.setAttribute("errorMessage", "Failed to update profile.");
-            }
+//            if (updated) {
+//                request.setAttribute("successMessage", "Profile updated successfully.");
+//            } else {
+//                request.setAttribute("errorMessage", "Failed to update profile.");
+//            }
 
             // Pass the updated doctor object to the JSP for rendering
             request.setAttribute("doctor", doctor);

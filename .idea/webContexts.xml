@@ -4,10 +4,12 @@
     <option name="state">
       <map>
         <entry key="file://$PROJECT_DIR$/src/main/webapp/index.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/view/pagesJsp/doctor/doctorDashboard.jsp" value="file://$PROJECT_DIR$/src/main/webapp/view/pagesJsp/doctor" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/view/pagesJsp/doctor/schedule.jsp" value="file://$PROJECT_DIR$/src/main/webapp/view/pagesJsp/doctor" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/view/pagesJsp/footer.jsp" value="file://$PROJECT_DIR$/src/main/webapp/view/pagesJsp" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/view/pagesJsp/login.jsp" value="file://$PROJECT_DIR$/src/main/webapp/view/pagesJsp" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/view/pagesJsp/navbar.jsp" value="file://$PROJECT_DIR$/src/main/webapp/view/pagesJsp" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/view/pagesJsp/patient/patientDashboard.jsp" value="file://$PROJECT_DIR$/src/main/webapp/view/pagesJsp/patient" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/view/pagesJsp/patient/patientProfile.jsp" value="file://$PROJECT_DIR$/src/main/webapp/view/pagesJsp/patient" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/view/pagesJsp/signup.jsp" value="file://$PROJECT_DIR$/src/main/webapp/view/pagesJsp" />
       </map>
