@@ -24,6 +24,7 @@ public class BookAppointmentServlet extends HttpServlet {
             List<Doctor> doctors = AppointmentDAO.getAllDoctors(); // Fetch doctors from DAO
             request.setAttribute("doctors", doctors);
 
+            // Forward the request to the JSP page to display doctors
             request.getRequestDispatcher("/view/pagesJsp/patient/book-appointment.jsp").forward(request, response);
         } else {
             response.sendRedirect("LoginServlet");
@@ -32,6 +33,7 @@ public class BookAppointmentServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Check if user is authenticated and is a patient
         if (AuthService.isAuthenticated(request) && AuthService.isPatient(request)) {
             Users user = AuthService.getCurrentUser(request);
             int userId = user.getUserId();
@@ -42,31 +44,45 @@ public class BookAppointmentServlet extends HttpServlet {
             String timeSlot = request.getParameter("timeSlot");
             String reason = request.getParameter("reason");
 
-            if (doctorIdStr == null || dateStr == null || timeSlot == null || reason == null || doctorIdStr.isEmpty() || dateStr.isEmpty() || timeSlot.isEmpty() || reason.isEmpty()) {
+            // Validate form data
+            if (doctorIdStr == null || dateStr == null || timeSlot == null || reason == null
+                    || doctorIdStr.trim().isEmpty() || dateStr.trim().isEmpty()
+                    || timeSlot.trim().isEmpty() || reason.trim().isEmpty()) {
                 request.setAttribute("error", "Please fill in all the fields.");
                 request.getRequestDispatcher("/view/pagesJsp/patient/book-appointment.jsp").forward(request, response);
                 return;
             }
 
-            int doctorId = Integer.parseInt(doctorIdStr);
-            Date appointmentDate = Date.valueOf(dateStr);
+            try {
+                int doctorId = Integer.parseInt(doctorIdStr);
+                Date appointmentDate = Date.valueOf(dateStr);
 
-            // Call DAO to save appointment
-            AppointmentDAO appointmentDAO = new AppointmentDAO();
-            boolean isBooked = appointmentDAO.bookAppointment(userId, doctorId, appointmentDate, reason, timeSlot);
+                // Call DAO to save the appointment
+                AppointmentDAO appointmentDAO = new AppointmentDAO();
+                boolean isBooked = appointmentDAO.bookAppointment(userId, doctorId, appointmentDate, reason, timeSlot);
 
-            if (isBooked) {
-                request.setAttribute("message", "Appointment booked successfully!");
-            } else {
-                request.setAttribute("error", "Failed to book appointment. Try again.");
+                if (isBooked) {
+                    request.setAttribute("message", "Appointment booked successfully!");
+                } else {
+                    request.setAttribute("error", "Failed to book appointment. Try again.");
+                }
+
+            } catch (IllegalArgumentException e) {
+                // Catch invalid date or number format issues
+                request.setAttribute("error", "Invalid input. Please check your form data.");
+            } catch (Exception e) {
+                e.printStackTrace();
+                request.setAttribute("error", "An unexpected error occurred. Please try again.");
             }
 
-            // Forward back to booking page (or to a confirmation page if you like)
+            // Forward back to the booking page (with either message or error)
             request.setAttribute("user", user);
             request.getRequestDispatcher("/view/pagesJsp/patient/book-appointment.jsp").forward(request, response);
 
         } else {
+            // If not authenticated, redirect to login
             response.sendRedirect("LoginServlet");
         }
     }
+
 }

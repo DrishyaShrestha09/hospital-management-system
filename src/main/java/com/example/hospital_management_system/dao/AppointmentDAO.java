@@ -1,4 +1,5 @@
 package com.example.hospital_management_system.dao;
+import com.example.hospital_management_system.model.Appointment;
 import com.example.hospital_management_system.model.Doctor;
 import com.example.hospital_management_system.utils.DBConnectionUtils;
 
@@ -63,4 +64,48 @@ public class AppointmentDAO {
 
         return false;
     }
+
+    public List<Appointment> getAppointmentsByUserId(int userId) {
+        List<Appointment> appointments = new ArrayList<>();
+        String getDoctorIdSQL = "SELECT d.doctor_id FROM doctor d " +
+                "JOIN user u ON d.user_id = u.user_id " +
+                "WHERE u.user_id = ?";
+
+        String getAppointmentsSQL = "SELECT a.appointment_id, a.appointment_date, a.time_slot, a.cause " +
+                "FROM appointment a " +
+                "WHERE a.doctor_id = ?";
+
+        try (Connection conn = DBConnectionUtils.getConnection();
+             PreparedStatement stmt1 = conn.prepareStatement(getDoctorIdSQL);
+             PreparedStatement stmt2 = conn.prepareStatement(getAppointmentsSQL)) {
+
+            // First, get the doctor_id using user_id
+            stmt1.setInt(1, userId);
+            try (ResultSet rs1 = stmt1.executeQuery()) {
+                if (rs1.next()) {
+                    int doctorId = rs1.getInt("doctor_id");
+
+                    // Now, get the appointments for that doctor_id
+                    stmt2.setInt(1, doctorId);
+                    try (ResultSet rs2 = stmt2.executeQuery()) {
+                        while (rs2.next()) {
+                            Appointment appt = new Appointment();
+                            appt.setAppointmentId(rs2.getInt("appointment_id"));
+                            appt.setAppointmentDate(rs2.getDate("appointment_date").toLocalDate());
+                            appt.setTimeSlot(rs2.getString("time_slot"));
+                            appt.setCause(rs2.getString("cause"));
+                            appointments.add(appt);
+                        }
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace(); // Consider logging this exception instead of printing
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Consider logging this exception instead of printing
+        }
+
+        return appointments;
+    }
+
 }

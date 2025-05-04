@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.*, java.text.SimpleDateFormat" %>
+<%@ page import="java.text.ParseException" %>
 
 <html>
 <head>
@@ -71,7 +72,19 @@
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     for (Map<String, String> appt : appointments) {
-        Date apptDate = sdf.parse(appt.get("date"));
+        Date apptDate = null;
+        String dateStr = appt.get("date");
+        if (dateStr != null && !dateStr.isEmpty()) {
+            try {
+                apptDate = sdf.parse(dateStr);
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            // Handle null or empty date (you could choose to skip or assign a default value)
+            continue; // This skips the current appointment if the date is invalid
+        }
+
         String status = appt.get("status");
 
         if ("cancelled".equals(status)) {
@@ -93,8 +106,6 @@
     <div class="dashboard-actions">
         <a href="BookAppointmentServlet" class="appointment-btn">Book New Appointment</a>
     </div>
-
-
 
     <div class="dashboard-stats">
         <div class="stat-card">

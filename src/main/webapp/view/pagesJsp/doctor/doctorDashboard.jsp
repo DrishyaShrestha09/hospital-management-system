@@ -1,5 +1,7 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <jsp:include page="/view/pagesJsp/doctor/doctorNav.jsp" />
+
 <html>
 <head>
     <title>Doctor Dashboard</title>
@@ -120,32 +122,36 @@
 
     <div class="dashboard-appointments">
         <h2>Your Appointments</h2>
-        <div class="appointments-list">
-            <c:forEach var="appointment" items="${appointments}">
-                <div class="appointment-item">
-                    <h4>Patient: ${appointment.patientName}</h4>
-                    <p>Date: ${appointment.date}</p>
-                    <p>Time: ${appointment.timeSlot}</p>
-                    <p>Status:
-                        <span class="status-${appointment.status}">
-                                ${appointment.status}
-                        </span>
-                    </p>
-                    <div class="appointment-actions">
-                        <button onclick="viewDetails('${appointment.id}')">View</button>
-                        <c:if test="${appointment.status == 'pending'}">
-                            <button onclick="updateStatus('${appointment.id}', 'confirmed')">Confirm</button>
-                            <button onclick="updateStatus('${appointment.id}', 'cancelled')">Cancel</button>
-                        </c:if>
-                        <c:if test="${appointment.status == 'confirmed'}">
-                            <button onclick="updateStatus('${appointment.id}', 'completed')">Complete</button>
-                        </c:if>
+        <c:if test="${not empty appointments}">
+            <div class="appointments-list">
+                <c:forEach var="appointment" items="${appointments}">
+                    <div class="appointment-item">
+                        <h4>Patient: ${appointment.patientName}</h4>
+                        <p>Date: ${appointment.date}</p>
+                        <p>Status:
+                            <span class="status-${appointment.status}">
+                                    ${appointment.status}
+                            </span>
+                        </p>
+                        <div class="appointment-actions">
+                            <button onclick="viewDetails('${appointment.id}')">View</button>
+                            <c:if test="${appointment.status == 'pending'}">
+                                <button onclick="updateStatus('${appointment.id}', 'confirmed')">Confirm</button>
+                                <button onclick="updateStatus('${appointment.id}', 'cancelled')">Cancel</button>
+                            </c:if>
+                            <c:if test="${appointment.status == 'confirmed'}">
+                                <button onclick="updateStatus('${appointment.id}', 'completed')">Complete</button>
+                            </c:if>
+                        </div>
                     </div>
-                </div>
-            </c:forEach>
-        </div>
+                </c:forEach>
+            </div>
+        </c:if>
+        <c:if test="${empty appointments}">
+            <p>No appointments found.</p>
+        </c:if>
     </div>
-</div>
+
 
 <jsp:include page="/view/pagesJsp/footer.jsp" />
 <!-- Toast Notification -->
