@@ -18,7 +18,15 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Forward to login page on GET request
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("rememberEmail".equals(cookie.getName())) {
+                    request.setAttribute("rememberedEmail", cookie.getValue());
+                    break;
+                }
+            }
+        }
         request.getRequestDispatcher("/view/pagesJsp/login.jsp").forward(request, response);
     }
 
@@ -28,6 +36,7 @@ public class LoginServlet extends HttpServlet {
 
         String email = request.getParameter("email");
         String password = request.getParameter("password");
+        String remember = request.getParameter("remember");
 
         try (Connection conn = DBConnectionUtils.getConnection()) {
 
@@ -40,19 +49,34 @@ public class LoginServlet extends HttpServlet {
                 String storedHash = rs.getString("user_password");
 
                 if (PasswordHashUtils.verifyPassword(password, storedHash)) {
-                    // Create a new Users object
                     Users user = new Users();
                     user.setUserId(rs.getInt("user_id"));
                     user.setName(rs.getString("user_name"));
                     user.setEmail(rs.getString("user_email"));
 
-                    // Ensure the Role column in the database is named correctly
-                    user.setRole(Users.Role.valueOf(rs.getString("role").toUpperCase()));  // Adjusted column name and case
+                    user.setRole(Users.Role.valueOf(rs.getString("role").toUpperCase()));
 
-                    // Set session via AuthService
-                    AuthService.createUserSession(request, user, 3600);  // 1 hour session
+                    AuthService.createUserSession(request, user, 3600);
 
-                    // Redirect based on role
+                    if ("true".equals(remember)) {
+                        Cookie rememberCookie = new Cookie("rememberEmail", email);
+                        rememberCookie.setMaxAge(7 * 24 * 60 * 60);
+                        rememberCookie.setPath(request.getContextPath());
+                        response.addCookie(rememberCookie);
+                    } else {
+                        Cookie[] cookies = request.getCookies();
+                        if (cookies != null) {
+                            for (Cookie cookie : cookies) {
+                                if ("rememberEmail".equals(cookie.getName())) {
+                                    cookie.setMaxAge(0);
+                                    cookie.setPath(request.getContextPath());
+                                    response.addCookie(cookie);
+                                }
+                            }
+                        }
+                    }
+
+                    // Redirect user based on role
                     switch (user.getRole()) {
                         case ADMIN:
                             response.sendRedirect(request.getContextPath() + "/index.jsp?login=success");
@@ -69,6 +93,7 @@ public class LoginServlet extends HttpServlet {
                     }
                 } else {
                     request.setAttribute("passwordError", "Invalid password.");
+                    request.setAttribute("email", email);
                     request.getRequestDispatcher("/view/pagesJsp/login.jsp").forward(request, response);
                 }
             } else {

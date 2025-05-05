@@ -50,6 +50,60 @@
             from {bottom: 30px; opacity: 1;}
             to {bottom: 0; opacity: 0;}
         }
+
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .remember-me input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            background-color: #fff;
+            border: 2px solid #ccc;
+            padding: 8px;
+            border-radius: 4px;
+            display: inline-block;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            width: 18px;
+            height: 18px;
+            margin-right: 10px;
+        }
+
+        .remember-me input[type="checkbox"]:checked {
+            background-color: #4CAF50;
+            border-color: #4CAF50;
+        }
+
+        .remember-me input[type="checkbox"]::after {
+            content: '';
+            position: absolute;
+            display: none;
+        }
+
+        .remember-me input[type="checkbox"]:checked::after {
+            display: block;
+            left: 5px;
+            top: 1px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .remember-me label {
+            font-size: 0.95em;
+            color: #333;
+            cursor: pointer;
+        }
+
     </style>
 
 </head>
@@ -66,6 +120,7 @@
 
                 <label for="email">Email:</label>
                 <input type="email" id="email" name="email" required
+                       value="<%= request.getAttribute("rememberedEmail") != null ? request.getAttribute("rememberedEmail") : (request.getAttribute("email") != null ? request.getAttribute("email") : "") %>"
                        class="form-input <%= (request.getAttribute("emailError") != null) ? "error-border" : "" %>" />
 
                 <label for="password">Password:</label>
@@ -79,6 +134,11 @@
                 <% if (request.getAttribute("passwordError") != null) { %>
                 <p class="error-message"><%= request.getAttribute("passwordError") %></p>
                 <% } %>
+
+                <div class="remember-me">
+                    <input type="checkbox" id="remember" name="remember" value="true">
+                    <label for="remember">Remember me</label>
+                </div>
 
                 <button type="submit">Login</button>
 
@@ -111,7 +171,6 @@
         if (passwordErrorMsg) passwordErrorMsg.style.display = "none";
     });
 
-    // Show toast if ?login=success is in URL
     const params = new URLSearchParams(window.location.search);
     if (params.get("login") === "success") {
         const toast = document.getElementById("toast");
