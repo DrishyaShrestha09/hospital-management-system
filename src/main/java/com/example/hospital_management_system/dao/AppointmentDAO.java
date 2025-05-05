@@ -6,10 +6,38 @@ import com.example.hospital_management_system.utils.DBConnectionUtils;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AppointmentDAO {
 
-    // Get all available doctors
+    // Get all available doctors with their names from the users table
+    public static List<Map<String, Object>> getAllDoctorsWithNames() {
+        List<Map<String, Object>> doctors = new ArrayList<>();
+        String sql = "SELECT d.doctor_id, d.specialty, d.experience, d.department_id, u.user_name " +
+                "FROM doctor d " +
+                "JOIN users u ON d.user_id = u.user_id";
+
+        try (Connection conn = DBConnectionUtils.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                Map<String, Object> doctor = new HashMap<>();
+                doctor.put("doctorId", rs.getInt("doctor_id"));
+                doctor.put("specialty", rs.getString("specialty"));
+                doctor.put("experience", rs.getInt("experience"));
+                doctor.put("departmentId", rs.getInt("department_id"));
+                doctor.put("name", rs.getString("user_name"));
+                doctors.add(doctor);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return doctors;
+    }
+
+    // Original getAllDoctors method - keep for backward compatibility
     public static List<Doctor> getAllDoctors() {
         List<Doctor> doctors = new ArrayList<>();
         String sql = "SELECT * FROM doctor";
@@ -107,5 +135,4 @@ public class AppointmentDAO {
 
         return appointments;
     }
-
 }
