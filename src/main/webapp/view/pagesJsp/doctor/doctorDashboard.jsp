@@ -57,6 +57,15 @@
         .status-cancelled { color: red; }
         .appointment-actions button {
             margin-right: 8px;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+        }
+        .appointment-actions button:hover {
+            background-color: #0056b3;
         }
         .toast {
             visibility: hidden;
@@ -84,6 +93,95 @@
         @keyframes fadeout {
             from {bottom: 30px; opacity: 1;}
             to {bottom: 0; opacity: 0;}
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            width: 50%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            animation: modalopen 0.4s;
+        }
+
+        @keyframes modalopen {
+            from {opacity: 0; transform: scale(0.8);}
+            to {opacity: 1; transform: scale(1);}
+        }
+
+        .close-modal {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-modal:hover,
+        .close-modal:focus {
+            color: black;
+            text-decoration: none;
+        }
+
+        .modal-header {
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: #333;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-body p {
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+
+        .modal-body .label {
+            font-weight: bold;
+            color: #555;
+            width: 120px;
+            display: inline-block;
+        }
+
+        .modal-footer {
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+            text-align: right;
+        }
+
+        .modal-footer button {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .modal-footer button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
@@ -132,7 +230,7 @@
                             </span>
                         </p>
                         <div class="appointment-actions">
-                            <button onclick="viewDetails('${appointment.id}')">View</button>
+                            <button onclick="viewDetails('${appointment.id}', '${appointment.patientName}', '${appointment.date}', '${appointment.timeSlot}', '${appointment.cause}')">View</button>
                             <c:if test="${appointment.status == 'pending'}">
                                 <button onclick="updateStatus('${appointment.id}', 'confirmed')">Confirm</button>
                                 <button onclick="updateStatus('${appointment.id}', 'cancelled')">Cancel</button>
@@ -149,45 +247,120 @@
             <p>No appointments found.</p>
         </c:if>
     </div>
+</div>
 
+<!-- Appointment Details Modal -->
+<div id="appointmentModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <div class="modal-header">
+            <h2>Appointment Details</h2>
+        </div>
+        <div class="modal-body">
+            <p><span class="label">Appointment ID:</span> <span id="modal-appointment-id"></span></p>
+            <p><span class="label">Patient Name:</span> <span id="modal-patient-name"></span></p>
+            <p><span class="label">Date:</span> <span id="modal-date"></span></p>
+            <p><span class="label">Time:</span> <span id="modal-time"></span></p>
+            <p><span class="label">Reason:</span> <span id="modal-reason"></span></p>
+        </div>
+        <div class="modal-footer">
+            <button onclick="closeModal()">Close</button>
+        </div>
+    </div>
+</div>
 
 <jsp:include page="/view/pagesJsp/footer.jsp" />
 <!-- Toast Notification -->
 <div id="toast" class="toast"></div>
 <script>
     function updateStatus(appointmentId, newStatus) {
-        fetch(`/updateAppointmentStatus?appointmentId=${appointmentId}&status=${newStatus}`, {
+        // Confirm before updating status
+        let confirmMessage = `Are you sure you want to ${newStatus} this appointment?`;
+        if (!confirm(confirmMessage)) {
+            return;
+        }
+
+        // Create form data
+        const formData = new FormData();
+        formData.append('appointmentId', appointmentId);
+        formData.append('status', newStatus);
+
+        // Send the request
+        fetch('${pageContext.request.contextPath}/updateAppointmentStatus', {
             method: 'POST',
+            body: new URLSearchParams({
+                'appointmentId': appointmentId,
+                'status': newStatus
+            }),
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: `appointmentId=${appointmentId}&status=${newStatus}`
+            }
         })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
-                    // Update the UI or reload the appointments
-                    alert("Appointment status updated");
-                    location.reload();  // Reload to reflect changes
+                    // Show success message
+                    showToast(`Appointment ${newStatus} successfully!`);
+                    // Reload the page after a short delay
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
                 } else {
-                    alert("Failed to update status");
+                    showToast(`Failed to update status: ${data.message}`);
                 }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('An error occurred while updating the appointment status');
             });
     }
 
-    function viewDetails(id) {
-        // Open a modal or redirect to details page
-        alert("Open details modal for appointment ID: " + id);
+    // Get the modal
+    const modal = document.getElementById("appointmentModal");
+
+    // Function to display appointment details in the modal
+    function viewDetails(id, patientName, date, timeSlot, cause) {
+        document.getElementById("modal-appointment-id").textContent = id;
+        document.getElementById("modal-patient-name").textContent = patientName;
+        document.getElementById("modal-date").textContent = date;
+        document.getElementById("modal-time").textContent = timeSlot;
+        document.getElementById("modal-reason").textContent = cause;
+
+        // Display the modal
+        modal.style.display = "block";
     }
 
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("login") === "success") {
+    // Function to close the modal
+    function closeModal() {
+        modal.style.display = "none";
+    }
+
+    // Close the modal when clicking outside of it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+
+    // Function to show toast notification
+    function showToast(message) {
         const toast = document.getElementById("toast");
-        toast.textContent = "Login successful!";
+        toast.textContent = message;
         toast.className = "toast show";
         setTimeout(function () {
             toast.className = toast.className.replace("show", "");
         }, 3000);
+    }
+
+    // Check for login success message
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("login") === "success") {
+        showToast("Login successful!");
     }
 </script>
 </body>

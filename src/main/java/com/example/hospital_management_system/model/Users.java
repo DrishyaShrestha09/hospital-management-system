@@ -50,7 +50,13 @@ public class Users {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        // If the password is already hashed (starts with $2a$), store it as is
+        if (password != null && password.startsWith("$2a$")) {
+            this.password = password;
+        } else if (password != null && !password.isEmpty()) {
+            // Otherwise, hash the password before storing
+            this.password = PasswordHashUtils.hashPassword(password);
+        }
     }
 
     public String getPhone() {
@@ -100,6 +106,9 @@ public class Users {
      * @return true if password matches, false otherwise
      */
     public boolean verifyPassword(String inputPassword) {
+        if (inputPassword == null || this.password == null) {
+            return false;
+        }
         return PasswordHashUtils.verifyPassword(inputPassword, this.password);
     }
 }
