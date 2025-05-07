@@ -29,9 +29,13 @@ public class UserDAO {
             stmt.setString(1, user.getName());
             stmt.setString(2, user.getEmail());
 
-            // Hash the password before storing
-            String hashedPassword = PasswordHashUtils.hashPassword(user.getPassword());
-            stmt.setString(3, hashedPassword);
+            // Ensure the password is hashed before storing
+            String passwordToStore = user.getPassword();
+            if (!PasswordHashUtils.isPasswordHashed(passwordToStore)) {
+                passwordToStore = PasswordHashUtils.hashPassword(passwordToStore);
+                LOGGER.info("Password hashed during registration");
+            }
+            stmt.setString(3, passwordToStore);
 
             // Convert enum to string
             stmt.setString(4, user.getRole().toString().toLowerCase());
@@ -75,7 +79,11 @@ public class UserDAO {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return mapResultSetToUser(rs);
+                Users user = mapResultSetToUser(rs);
+                LOGGER.info("User found by email: " + email);
+                return user;
+            } else {
+                LOGGER.info("No user found with email: " + email);
             }
 
         } catch (SQLException e) {
@@ -100,7 +108,11 @@ public class UserDAO {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return mapResultSetToUser(rs);
+                Users user = mapResultSetToUser(rs);
+                LOGGER.info("User found by ID: " + userId);
+                return user;
+            } else {
+                LOGGER.info("No user found with ID: " + userId);
             }
 
         } catch (SQLException e) {
@@ -157,7 +169,15 @@ public class UserDAO {
 
             stmt.setString(1, user.getName());
             stmt.setString(2, user.getEmail());
-            stmt.setString(3, user.getPassword()); // Password should already be hashed
+
+            // Check if the password needs to be hashed before storing
+            String passwordToStore = user.getPassword();
+            if (!PasswordHashUtils.isPasswordHashed(passwordToStore)) {
+                passwordToStore = PasswordHashUtils.hashPassword(passwordToStore);
+                LOGGER.info("Password hashed before update for user: " + user.getUserId());
+            }
+            stmt.setString(3, passwordToStore);
+
             stmt.setString(4, user.getPhone());
             stmt.setString(5, user.getAddress());
             stmt.setString(6, user.getGender());
