@@ -79,7 +79,7 @@ public class LoginServlet extends HttpServlet {
                     // Redirect user based on role
                     switch (user.getRole()) {
                         case ADMIN:
-                            response.sendRedirect(request.getContextPath() + "/index.jsp?login=success");
+                            response.sendRedirect(request.getContextPath() + "/AdminServlet");
                             break;
                         case DOCTOR:
                             response.sendRedirect(request.getContextPath() + "/DocHome");
