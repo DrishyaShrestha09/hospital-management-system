@@ -94,6 +94,61 @@
             background-color: #f1f1f1;
         }
 
+        /* Buttons */
+        .btn {
+            padding: 8px 14px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            display: inline-block;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 5px;
+            width: 400px;
+            position: relative;
+        }
+
+        .close {
+            color: #aaa;
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
         label {
             display: block;
             margin-bottom: 5px;
@@ -130,6 +185,14 @@
     Users currentUser = AuthService.getCurrentUser(request);
     List<Map<String, Object>> patientsWithAppointments = (List<Map<String, Object>>) request.getAttribute("patientsWithAppointments");
     List<Map<String, Object>> doctors = (List<Map<String, Object>>) request.getAttribute("doctors");
+
+    // Get messages from session and then remove them
+    String successMessage = (String) session.getAttribute("successMessage");
+    String errorMessage = (String) session.getAttribute("errorMessage");
+
+    // Clear the session attributes after retrieving them
+    session.removeAttribute("successMessage");
+    session.removeAttribute("errorMessage");
 %>
 
 <div class="dashboard-container">
@@ -138,6 +201,18 @@
         <h1>Admin Dashboard</h1>
         <p class="welcome-text">Welcome, <%= currentUser.getName() %></p>
     </div>
+
+    <% if (successMessage != null && !successMessage.isEmpty()) { %>
+    <div class="alert alert-success">
+        <%= successMessage %>
+    </div>
+    <% } %>
+
+    <% if (errorMessage != null && !errorMessage.isEmpty()) { %>
+    <div class="alert alert-danger">
+        <%= errorMessage %>
+    </div>
+    <% } %>
 
     <% if (request.getAttribute("successMessage") != null) { %>
     <div class="alert alert-success">
@@ -187,6 +262,7 @@
                 <th>Name</th>
                 <th>Specialty</th>
                 <th>Email</th>
+                <th>Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -197,15 +273,57 @@
                 <td><%= doctor.get("user_name") %></td>
                 <td><%= doctor.get("doctor_specialty") %></td>
                 <td><%= doctor.get("user_email") %></td>
+                <td>
+                    <button class="btn btn-danger" onclick="confirmDelete(<%= doctor.get("doctor_id") %>, '<%= doctor.get("user_name") %>')">Delete</button>
+                </td>
             </tr>
             <% }} else { %>
-            <tr><td colspan="4" style="text-align:center;">No doctors found</td></tr>
+            <tr><td colspan="5" style="text-align:center;">No doctors found</td></tr>
             <% } %>
             </tbody>
         </table>
     </div>
-
 </div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Confirm Delete</h2>
+        <p id="deleteConfirmMessage">Are you sure you want to delete this doctor?</p>
+        <p><strong>WARNING:</strong> This will completely remove the doctor from the system. The doctor will no longer be able to log in, and all their appointments will be deleted.</p>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+            <button class="btn" style="background-color: #ccc;" onclick="closeModal()">Cancel</button>
+            <form id="deleteForm" action="<%= request.getContextPath() %>/DeleteDoctorServlet" method="get">
+                <input type="hidden" id="doctorIdInput" name="doctorId" value="">
+                <button type="submit" class="btn btn-danger">Delete Permanently</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Modal functions
+    const modal = document.getElementById('deleteModal');
+
+    function confirmDelete(doctorId, doctorName) {
+        document.getElementById('doctorIdInput').value = doctorId;
+        document.getElementById('deleteConfirmMessage').textContent =
+            "Are you sure you want to delete Dr. " + doctorName + "?";
+        modal.style.display = 'block';
+    }
+
+    function closeModal() {
+        modal.style.display = 'none';
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        if (event.target === modal) {
+            closeModal();
+        }
+    }
+</script>
 
 </body>
 </html>
