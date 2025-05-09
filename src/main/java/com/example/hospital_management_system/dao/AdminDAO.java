@@ -5,8 +5,11 @@ import com.example.hospital_management_system.utils.DBConnectionUtils;
 
 import java.sql.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AdminDAO {
+    private static final Logger LOGGER = Logger.getLogger(AdminDAO.class.getName());
 
     // Method to get patients with appointment count
     public List<Map<String, Object>> getPatientsWithAppointments() {
@@ -41,7 +44,7 @@ public class AdminDAO {
     public List<Map<String, Object>> getAllDoctors() {
         List<Map<String, Object>> doctorsList = new ArrayList<>();
 
-        String query = "SELECT d.doctor_id, u.user_name, d.specialty AS doctor_specialty, u.user_email " +
+        String query = "SELECT d.doctor_id, u.user_name, d.specialty AS doctor_specialty, u.user_email, u.user_id " +
                 "FROM doctor d " +
                 "JOIN users u ON d.user_id = u.user_id";
 
@@ -52,6 +55,7 @@ public class AdminDAO {
             while (resultSet.next()) {
                 Map<String, Object> doctorData = new HashMap<>();
                 doctorData.put("doctor_id", resultSet.getInt("doctor_id"));
+                doctorData.put("user_id", resultSet.getInt("user_id"));
                 doctorData.put("user_name", resultSet.getString("user_name"));
                 doctorData.put("doctor_specialty", resultSet.getString("doctor_specialty"));
                 doctorData.put("user_email", resultSet.getString("user_email"));
@@ -86,5 +90,227 @@ public class AdminDAO {
         }
 
         return user;
+    }
+
+    /**
+     * Delete a doctor by doctor ID - completely removes the doctor from the system
+     * @param doctorId The doctor ID to delete
+     * @return true if deletion was successful, false otherwise
+     */
+    public boolean deleteDoctor(int doctorId) {
+        // First, get the user_id associated with this doctor
+        int userId = getUserIdByDoctorId(doctorId);
+        if (userId <= 0) {
+            LOGGER.severe("Could not find user ID for doctor ID: " + doctorId);
+            return false;
+        }
+
+        LOGGER.info("Starting complete deletion process for doctor ID: " + doctorId + " with user ID: " + userId);
+
+        Connection conn = null;
+        boolean success = false;
+
+        try {
+            conn = DBConnectionUtils.getConnection();
+
+            // Important: Disable auto-commit to use transactions
+            conn.setAutoCommit(false);
+            LOGGER.info("Transaction started - auto-commit disabled");
+
+            // Print the current database state for debugging
+            printDoctorInfo(conn, doctorId, userId);
+
+            // 1. First check and delete appointment_status records
+            String checkAppointmentStatusSql =
+                    "SELECT COUNT(*) FROM appointment_status WHERE appointment_id IN " +
+                            "(SELECT appointment_id FROM appointment WHERE doctor_id = ?)";
+
+            try (PreparedStatement stmt = conn.prepareStatement(checkAppointmentStatusSql)) {
+                stmt.setInt(1, doctorId);
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next() && rs.getInt(1) > 0) {
+                    LOGGER.info("Found " + rs.getInt(1) + " appointment status records to delete for doctor ID: " + doctorId);
+
+                    // Delete appointment status records
+                    String deleteAppointmentStatusSql =
+                            "DELETE FROM appointment_status WHERE appointment_id IN " +
+                                    "(SELECT appointment_id FROM appointment WHERE doctor_id = ?)";
+
+                    try (PreparedStatement deleteStmt = conn.prepareStatement(deleteAppointmentStatusSql)) {
+                        deleteStmt.setInt(1, doctorId);
+                        int statusRowsDeleted = deleteStmt.executeUpdate();
+                        LOGGER.info("Deleted " + statusRowsDeleted + " appointment status records");
+                    }
+                }
+            }
+
+            // 2. Delete appointments for this doctor
+            String deleteAppointmentsSql = "DELETE FROM appointment WHERE doctor_id = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(deleteAppointmentsSql)) {
+                stmt.setInt(1, doctorId);
+                int appointmentsDeleted = stmt.executeUpdate();
+                LOGGER.info("Deleted " + appointmentsDeleted + " appointments for doctor ID: " + doctorId);
+            }
+
+            // 3. Delete the doctor record
+            String deleteDoctorSql = "DELETE FROM doctor WHERE doctor_id = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(deleteDoctorSql)) {
+                stmt.setInt(1, doctorId);
+                int doctorRowsDeleted = stmt.executeUpdate();
+
+                if (doctorRowsDeleted <= 0) {
+                    LOGGER.severe("No doctor record was deleted for doctor ID: " + doctorId);
+                    conn.rollback();
+                    return false;
+                }
+                LOGGER.info("Deleted doctor record for doctor ID: " + doctorId);
+            }
+
+            // 4. COMPLETELY DELETE the user record instead of just changing the role
+            String deleteUserSql = "DELETE FROM users WHERE user_id = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(deleteUserSql)) {
+                stmt.setInt(1, userId);
+                int userRowsDeleted = stmt.executeUpdate();
+
+                if (userRowsDeleted <= 0) {
+                    LOGGER.severe("Failed to delete user record for user ID: " + userId);
+                    conn.rollback();
+                    return false;
+                }
+                LOGGER.info("Completely deleted user record for user ID: " + userId);
+            }
+
+            // Verify the deletion
+            if (verifyDoctorDeleted(conn, doctorId, userId)) {
+                // If we got here, everything succeeded
+                conn.commit();
+                LOGGER.info("Transaction committed successfully - doctor completely deleted from system");
+                success = true;
+            } else {
+                LOGGER.severe("Verification failed - doctor or user still exists in database");
+                conn.rollback();
+                success = false;
+            }
+
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "SQL error during doctor deletion: " + e.getMessage(), e);
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                    LOGGER.info("Transaction rolled back due to error");
+                } catch (SQLException ex) {
+                    LOGGER.log(Level.SEVERE, "Error rolling back transaction", ex);
+                }
+            }
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                    LOGGER.info("Connection closed and auto-commit restored");
+                } catch (SQLException e) {
+                    LOGGER.log(Level.SEVERE, "Error closing connection", e);
+                }
+            }
+        }
+
+        return success;
+    }
+
+    /**
+     * Print doctor and user information for debugging
+     */
+    private void printDoctorInfo(Connection conn, int doctorId, int userId) throws SQLException {
+        // Check doctor record
+        String checkDoctorSql = "SELECT * FROM doctor WHERE doctor_id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(checkDoctorSql)) {
+            stmt.setInt(1, doctorId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                LOGGER.info("BEFORE DELETE - Doctor record exists: doctor_id=" + rs.getInt("doctor_id") +
+                        ", user_id=" + rs.getInt("user_id") +
+                        ", specialty=" + rs.getString("specialty"));
+            } else {
+                LOGGER.info("BEFORE DELETE - No doctor record found with ID: " + doctorId);
+            }
+        }
+
+        // Check user record
+        String checkUserSql = "SELECT * FROM users WHERE user_id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(checkUserSql)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                LOGGER.info("BEFORE DELETE - User record exists: user_id=" + rs.getInt("user_id") +
+                        ", name=" + rs.getString("user_name") +
+                        ", email=" + rs.getString("user_email") +
+                        ", role=" + rs.getString("role"));
+            } else {
+                LOGGER.info("BEFORE DELETE - No user record found with ID: " + userId);
+            }
+        }
+    }
+
+    /**
+     * Verify that the doctor and user records are actually deleted
+     */
+    private boolean verifyDoctorDeleted(Connection conn, int doctorId, int userId) throws SQLException {
+        boolean doctorDeleted = true;
+        boolean userDeleted = true;
+
+        // Check doctor record
+        String checkDoctorSql = "SELECT COUNT(*) FROM doctor WHERE doctor_id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(checkDoctorSql)) {
+            stmt.setInt(1, doctorId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                LOGGER.severe("VERIFICATION FAILED - Doctor record still exists with ID: " + doctorId);
+                doctorDeleted = false;
+            } else {
+                LOGGER.info("VERIFICATION PASSED - Doctor record successfully deleted with ID: " + doctorId);
+            }
+        }
+
+        // Check user record
+        String checkUserSql = "SELECT COUNT(*) FROM users WHERE user_id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(checkUserSql)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                LOGGER.severe("VERIFICATION FAILED - User record still exists with ID: " + userId);
+                userDeleted = false;
+            } else {
+                LOGGER.info("VERIFICATION PASSED - User record successfully deleted with ID: " + userId);
+            }
+        }
+
+        return doctorDeleted && userDeleted;
+    }
+
+    /**
+     * Get user ID by doctor ID
+     * @param doctorId The doctor ID
+     * @return The user ID or -1 if not found
+     */
+    private int getUserIdByDoctorId(int doctorId) {
+        String sql = "SELECT user_id FROM doctor WHERE doctor_id = ?";
+
+        try (Connection conn = DBConnectionUtils.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, doctorId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    int userId = rs.getInt("user_id");
+                    LOGGER.info("Found user ID: " + userId + " for doctor ID: " + doctorId);
+                    return userId;
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error getting user ID by doctor ID", e);
+        }
+
+        LOGGER.warning("No user ID found for doctor ID: " + doctorId);
+        return -1;
     }
 }
