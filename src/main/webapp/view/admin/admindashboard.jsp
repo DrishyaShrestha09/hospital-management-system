@@ -67,7 +67,7 @@
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             padding: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 80px;
         }
 
         .card-header {
@@ -92,63 +92,6 @@
 
         table th {
             background-color: #f1f1f1;
-        }
-
-        /* Buttons */
-        .btn {
-            padding: 8px 14px;
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        .btn-info {
-            background-color: #3498db;
-            color: white;
-        }
-
-        .btn-danger {
-            background-color: #e74c3c;
-            color: white;
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 999;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.4);
-        }
-
-        .modal-content {
-            background-color: #fff;
-            margin: 10% auto;
-            padding: 20px;
-            border-radius: 5px;
-            width: 400px;
-            position: relative;
-        }
-
-        .close {
-            color: #aaa;
-            position: absolute;
-            right: 15px;
-            top: 10px;
-            font-size: 24px;
-            cursor: pointer;
-        }
-
-        .close:hover {
-            color: #000;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
         }
 
         label {
@@ -189,7 +132,6 @@
     List<Map<String, Object>> doctors = (List<Map<String, Object>>) request.getAttribute("doctors");
 %>
 
-<!-- Dashboard Container -->
 <div class="dashboard-container">
 
     <div class="dashboard-header">
@@ -218,7 +160,6 @@
                 <th>Name</th>
                 <th>Email</th>
                 <th>Appointment Count</th>
-                <th>Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -229,12 +170,9 @@
                 <td><%= patient.get("user_name") %></td>
                 <td><%= patient.get("user_email") %></td>
                 <td><%= patient.get("appointment_count") %></td>
-                <td>
-                    <a href="<%= request.getContextPath() %>/PatientDetailsServlet?patientId=<%= patient.get("patient_id") %>" class="btn btn-info">View Details</a>
-                </td>
             </tr>
             <% }} else { %>
-            <tr><td colspan="5" style="text-align:center;">No patients found</td></tr>
+            <tr><td colspan="4" style="text-align:center;">No patients found</td></tr>
             <% } %>
             </tbody>
         </table>
