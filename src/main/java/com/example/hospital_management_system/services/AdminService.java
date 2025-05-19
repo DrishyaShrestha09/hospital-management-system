@@ -32,4 +32,19 @@ public class AdminService {
         LOGGER.info("AdminService: Delete doctor result: " + result);
         return result;
     }
+
+    /**
+     * Update a doctor's information
+     * @param doctorId The doctor ID to update
+     * @param name The new name
+     * @param specialty The new specialty
+     * @param email The new email
+     * @return true if update was successful, false otherwise
+     */
+    public static boolean updateDoctor(int doctorId, String name, String specialty, String email) {
+        LOGGER.info("AdminService: Attempting to update doctor with ID: " + doctorId);
+        boolean result = adminDAO.updateDoctor(doctorId, name, specialty, email);
+        LOGGER.info("AdminService: Update doctor result: " + result);
+        return result;
+    }
 }

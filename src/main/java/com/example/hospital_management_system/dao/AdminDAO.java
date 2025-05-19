@@ -93,6 +93,93 @@ public class AdminDAO {
     }
 
     /**
+     * Update a doctor's information
+     * @param doctorId The doctor ID to update
+     * @param name The new name
+     * @param specialty The new specialty
+     * @param email The new email
+     * @return true if update was successful, false otherwise
+     */
+    public boolean updateDoctor(int doctorId, String name, String specialty, String email) {
+        Connection conn = null;
+        boolean success = false;
+
+        try {
+            conn = DBConnectionUtils.getConnection();
+            conn.setAutoCommit(false);
+            LOGGER.info("Starting transaction to update doctor ID: " + doctorId);
+
+            // First, get the user_id associated with this doctor
+            int userId = getUserIdByDoctorId(doctorId);
+            if (userId <= 0) {
+                LOGGER.severe("Could not find user ID for doctor ID: " + doctorId);
+                return false;
+            }
+
+            LOGGER.info("Found user ID: " + userId + " for doctor ID: " + doctorId);
+
+            // Update the user information
+            String updateUserSql = "UPDATE users SET user_name = ?, user_email = ? WHERE user_id = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(updateUserSql)) {
+                stmt.setString(1, name);
+                stmt.setString(2, email);
+                stmt.setInt(3, userId);
+                int userRowsUpdated = stmt.executeUpdate();
+
+                if (userRowsUpdated <= 0) {
+                    LOGGER.severe("Failed to update user record for user ID: " + userId);
+                    conn.rollback();
+                    return false;
+                }
+                LOGGER.info("Updated user record for user ID: " + userId);
+            }
+
+            // Update the doctor specialty
+            String updateDoctorSql = "UPDATE doctor SET specialty = ? WHERE doctor_id = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(updateDoctorSql)) {
+                stmt.setString(1, specialty);
+                stmt.setInt(2, doctorId);
+                int doctorRowsUpdated = stmt.executeUpdate();
+
+                if (doctorRowsUpdated <= 0) {
+                    LOGGER.severe("Failed to update doctor record for doctor ID: " + doctorId);
+                    conn.rollback();
+                    return false;
+                }
+                LOGGER.info("Updated doctor record for doctor ID: " + doctorId);
+            }
+
+            // Commit the transaction
+            conn.commit();
+            LOGGER.info("Transaction committed successfully - doctor information updated");
+            success = true;
+
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "SQL error during doctor update: " + e.getMessage(), e);
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                    LOGGER.info("Transaction rolled back due to error");
+                } catch (SQLException ex) {
+                    LOGGER.log(Level.SEVERE, "Error rolling back transaction", ex);
+                }
+            }
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                    LOGGER.info("Connection closed and auto-commit restored");
+                } catch (SQLException e) {
+                    LOGGER.log(Level.SEVERE, "Error closing connection", e);
+                }
+            }
+        }
+
+        return success;
+    }
+
+    /**
      * Delete a doctor by doctor ID - completely removes the doctor from the system
      * @param doctorId The doctor ID to delete
      * @return true if deletion was successful, false otherwise
