@@ -103,6 +103,7 @@
             cursor: pointer;
             border: none;
             display: inline-block;
+            margin-right: 5px;
         }
 
         .btn-danger {
@@ -112,6 +113,15 @@
 
         .btn-danger:hover {
             background-color: #c0392b;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
         }
 
         /* Modal */
@@ -159,6 +169,8 @@
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
         }
 
         input[type="submit"] {
@@ -172,6 +184,15 @@
 
         input[type="submit"]:hover {
             background-color: #2980b9;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
         }
     </style>
 </head>
@@ -273,7 +294,8 @@
                 <td><%= doctor.get("user_name") %></td>
                 <td><%= doctor.get("doctor_specialty") %></td>
                 <td><%= doctor.get("user_email") %></td>
-                <td>
+                <td class="button-group">
+                    <button class="btn btn-primary" onclick="openEditModal(<%= doctor.get("doctor_id") %>, '<%= doctor.get("user_name") %>', '<%= doctor.get("doctor_specialty") %>', '<%= doctor.get("user_email") %>')">Edit</button>
                     <button class="btn btn-danger" onclick="confirmDelete(<%= doctor.get("doctor_id") %>, '<%= doctor.get("user_name") %>')">Delete</button>
                 </td>
             </tr>
@@ -302,8 +324,39 @@
     </div>
 </div>
 
+<!-- Edit Doctor Modal -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeEditModal()">&times;</span>
+        <h2>Edit Doctor</h2>
+        <form id="editForm" action="<%= request.getContextPath() %>/EditDoctorServlet" method="post">
+            <input type="hidden" id="editDoctorId" name="doctorId" value="">
+
+            <div class="form-group">
+                <label for="editName">Name:</label>
+                <input type="text" id="editName" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="editSpecialty">Specialty:</label>
+                <input type="text" id="editSpecialty" name="specialty" required>
+            </div>
+
+            <div class="form-group">
+                <label for="editEmail">Email:</label>
+                <input type="email" id="editEmail" name="email" required>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                <button type="button" class="btn" style="background-color: #ccc;" onclick="closeEditModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
-    // Modal functions
+    // Delete Modal functions
     const modal = document.getElementById('deleteModal');
 
     function confirmDelete(doctorId, doctorName) {
@@ -317,10 +370,33 @@
         modal.style.display = 'none';
     }
 
-    // Close modal when clicking outside
+    // Edit Modal functions
+    const editModal = document.getElementById('editModal');
+    const editForm = document.getElementById('editForm');
+    const editDoctorId = document.getElementById('editDoctorId');
+    const editName = document.getElementById('editName');
+    const editSpecialty = document.getElementById('editSpecialty');
+    const editEmail = document.getElementById('editEmail');
+
+    function openEditModal(doctorId, doctorName, doctorSpecialty, doctorEmail) {
+        editDoctorId.value = doctorId;
+        editName.value = doctorName;
+        editSpecialty.value = doctorSpecialty;
+        editEmail.value = doctorEmail;
+        editModal.style.display = 'block';
+    }
+
+    function closeEditModal() {
+        editModal.style.display = 'none';
+    }
+
+    // Close modals when clicking outside
     window.onclick = function(event) {
         if (event.target === modal) {
             closeModal();
+        }
+        if (event.target === editModal) {
+            closeEditModal();
         }
     }
 </script>
