@@ -76,7 +76,7 @@ public class LoginServlet extends HttpServlet {
                         }
                     }
 
-                    // Redirect user based on role
+                    // Role based user navigation
                     switch (user.getRole()) {
                         case ADMIN:
                             response.sendRedirect(request.getContextPath() + "/AdminServlet");
