@@ -1,8 +1,8 @@
-<nav class="navbar">
+<nav class="navbar" style="font-family: 'Inter', sans-serif;">
     <div class="navbar-container">
 
         <!-- Logo -->
-        <a href="${pageContext.request.contextPath}/index.jsp" class="navbar-logo">
+        <a href="${pageContext.request.contextPath}/PatientDashboardServlet" class="navbar-logo">
             <img src="${pageContext.request.contextPath}" alt="" height="30" />
             <span class="logo-text">NetruDoc</span>
         </a>

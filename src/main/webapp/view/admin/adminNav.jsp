@@ -86,7 +86,7 @@
     <div class="navbar-container">
 
         <!-- Logo -->
-        <a href="${pageContext.request.contextPath}/index.jsp" class="navbar-logo">
+        <a href="${pageContext.request.contextPath}/AdminServlet" class="navbar-logo">
             <img src="${pageContext.request.contextPath}" alt="" height="30" />
             <span class="logo-text">NetruDoc</span>
         </a>
@@ -94,13 +94,8 @@
         <!-- Navigation Links -->
         <ul class="nav-menu" id="navMenu">
             <li class="nav-item">
-                <a href="#" class="nav-link">Dashboard</a>
+                <a href="${pageContext.request.contextPath}/AdminServlet" class="nav-link">Dashboard</a>
             </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link">Departments</a>
-            </li><li class="nav-item">
-            <a href="#" class="nav-link">Reports</a>
-        </li>
             <li class="nav-item">
                 <a href= "${pageContext.request.contextPath}/auth/logout" class="nav-link">Logout</a>
             </li>
@@ -109,7 +104,6 @@
     </div>
 </nav>
 
-<!-- Responsive toggle script -->
 <script>
     function toggleMenu() {
         const navMenu = document.getElementById("navMenu");

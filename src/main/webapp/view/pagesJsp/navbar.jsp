@@ -1,4 +1,4 @@
-<nav class="navbar">
+<nav class="navbar" style="font-family: 'Inter', sans-serif;">
     <div class="navbar-container">
 
         <!-- Logo -->

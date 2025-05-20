@@ -12,6 +12,12 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/view/css/navigation.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/view/css/footer.css">
     <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+
+        }
         .error-message {
             color: #dc3545;
             font-size: 0.9em;

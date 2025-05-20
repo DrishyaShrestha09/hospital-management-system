@@ -1,8 +1,8 @@
 :root {
-    --text-secondary: #6b7280;         /* Example grey-500 */
-    --bg-secondary: #f3f4f6;           /* Example gray-100 */
-    --border-color: #d1d5db;           /* Example gray-300 */
-    --radius: 0.5rem;                  /* 8px border-radius */
+    --text-secondary: #6b7280;
+    --bg-secondary: #f3f4f6;
+    --border-color: #d1d5db;
+    --radius: 0.5rem
 }
 
 .schedule-page {
