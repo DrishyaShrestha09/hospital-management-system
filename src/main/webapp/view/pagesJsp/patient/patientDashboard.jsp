@@ -10,6 +10,12 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/view/css/footer.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/view/css/appointment.css">
     <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+
+        }
         .toast {
             visibility: hidden;
             min-width: 250px;
@@ -318,7 +324,7 @@
         </div>
     </div>
 
-    <h2>Your Appointments</h2>
+    <h2 style="margin-bottom: 20px">Your Appointments</h2>
     <div class="appointments-list">
         <% for (Map<String, String> appt : appointments) {
             String id = appt.get("id");

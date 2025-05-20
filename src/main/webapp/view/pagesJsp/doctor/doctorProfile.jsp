@@ -12,6 +12,12 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/view/css/navigation.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/view/css/footer.css">
     <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+
+        }
         .profile-container {
             max-width: 1000px;
             margin: 40px auto;

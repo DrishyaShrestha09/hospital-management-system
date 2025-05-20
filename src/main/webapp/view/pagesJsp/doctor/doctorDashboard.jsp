@@ -1,6 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<jsp:include page="/view/pagesJsp/doctor/doctorNav.jsp" />
+
 
 <html>
 <head>
@@ -10,6 +10,13 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/view/css/footer.css">
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
     <style>
+
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+
+        }
         .dashboard-page {
             font-family: Arial, sans-serif;
             background: #f5f5f5;
@@ -187,6 +194,7 @@
 </head>
 
 <body class="dashboard-page">
+<jsp:include page="/view/pagesJsp/doctor/doctorNav.jsp" />
 <div class="dashboard-container">
     <div class="dashboard-header">
         <h1>Welcome, Dr. ${currentUser.name}</h1>
@@ -270,6 +278,7 @@
 </div>
 
 <jsp:include page="/view/pagesJsp/footer.jsp" />
+
 <!-- Toast Notification -->
 <div id="toast" class="toast"></div>
 <script>
