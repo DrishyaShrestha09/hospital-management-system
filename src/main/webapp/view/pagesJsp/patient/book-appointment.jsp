@@ -52,6 +52,179 @@
             font-style: italic;
             margin-bottom: 5px;
         }
+        /* Clean button style — Discord inspired */
+        button {
+            background-color: white;
+            color: black;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 6px;
+            font-weight: normal;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            user-select: none;
+            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Hover effect: Discord blurple bg, white text, remove shadow */
+        button:hover {
+            background-color: #5865F2;
+            color: white;
+            box-shadow: none;
+        }
+
+        button:focus {
+            outline: 2px solid #5865F2;
+            outline-offset: 2px;
+        }
+
+        button:disabled,
+        button[disabled] {
+            background-color: #a9a9a9;
+            color: #555;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+
+
+        .time-slot {
+            background-color: white;
+            color: black;
+            padding: 12px 30px;
+            margin: 5px;
+            border-radius: 6px;
+            font-weight: normal;
+            font-size: 16px;
+            min-width: 110px;
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .time-slot:hover {
+            background-color: #5865F2;
+            color: white;
+            box-shadow: none;
+        }
+
+        .time-slot.selected {
+            background-color: #5865F2;
+            color: white;
+            box-shadow: 0 0 8px 2px rgba(30, 30, 30, 0.4);
+        }
+        /* Label style */
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 16px;
+            color: #000;
+            font-weight: 600;
+        }
+
+        /* Date input styling */
+        input[type="date"] {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 6px;
+            background-color: white;
+            color: black;
+            font-size: 16px;
+            box-shadow: 0 0 6px rgba(0,0,0,0.15);
+            transition: box-shadow 0.3s ease, background-color 0.3s ease;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+
+        /* On focus */
+        input[type="date"]:focus {
+            outline: 2px solid #5865F2;
+            box-shadow: 0 0 10px rgba(88, 101, 242, 0.4);
+        }
+
+        /* When disabled */
+        input[type="date"]:disabled {
+            background-color: #f0f0f0;
+            color: #999;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        #form-step-3 {
+            margin-top: 20px;
+        }
+
+        #form-step-3 h3 {
+            font-weight: 600;
+            color: #2c2f33;
+            margin-bottom: 12px;
+        }
+
+        #form-step-3 textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 12px 15px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            resize: vertical;
+            box-shadow: 0 0 5px rgba(0,0,0,0.05);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        #form-step-3 textarea:focus {
+            border-color: #5865F2; /* Discord blurple */
+            box-shadow: 0 0 8px rgba(88, 101, 242, 0.6);
+            outline: none;
+        }
+
+        #form-step-3 .step-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-start;
+        }
+
+        #form-step-3 .step-actions button {
+            background-color: white;
+            color: black;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 6px;
+            font-weight: normal;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            user-select: none;
+            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        #form-step-3 .step-actions button:hover {
+            background-color: #5865F2;
+            color: white;
+            box-shadow: none;
+        }
+
+        #form-step-3 .step-actions button:focus {
+            outline: 2px solid #5865F2;
+            outline-offset: 2px;
+        }
+
+        #form-step-3 .step-actions button:disabled {
+            background-color: #ccc;
+            color: #666;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+
+
+
     </style>
 </head>
 <body>
