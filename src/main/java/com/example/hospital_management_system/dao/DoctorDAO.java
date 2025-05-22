@@ -31,12 +31,6 @@ public class DoctorDAO {
         return false;
     }
 
-    /**
-     * Updates a doctor's profile information
-     *
-     * @param doctor The doctor object containing updated information
-     * @return true if update was successful, false otherwise
-     */
     public boolean updateDoctorProfile(Doctor doctor) {
         // Log the doctor object to debug
         LOGGER.info("Updating doctor: ID=" + doctor.getDoctorId() +
@@ -44,35 +38,29 @@ public class DoctorDAO {
                 ", Experience=" + doctor.getExperience() +
                 ", DepartmentID=" + doctor.getDepartmentId());
 
-        // Validate doctor ID
         if (doctor.getDoctorId() <= 0) {
             LOGGER.severe("Invalid doctor ID: " + doctor.getDoctorId());
             return false;
         }
 
-        // First check if department exists
         if (doctor.getDepartmentId() <= 0 || !isDepartmentExists(doctor.getDepartmentId())) {
             LOGGER.severe("Department ID " + doctor.getDepartmentId() + " does not exist or is invalid");
             return false;
         }
 
-        // First check if the doctor exists
         if (!doctorExists(doctor.getDoctorId())) {
             LOGGER.severe("Doctor with ID " + doctor.getDoctorId() + " does not exist");
             return false;
         }
 
-        // Use a more specific SQL query that only updates the fields we want
         String sql = "UPDATE doctor SET specialty = ?, experience = ?, department_id = ? WHERE doctor_id = ?";
 
         try (Connection conn = DBConnectionUtils.getConnection()) {
-            // Check connection
             if (conn == null) {
                 LOGGER.severe("Database connection is null");
                 return false;
             }
 
-            // Log connection status
             LOGGER.info("Database connection established successfully");
 
             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -81,7 +69,6 @@ public class DoctorDAO {
                 stmt.setInt(3, doctor.getDepartmentId());
                 stmt.setInt(4, doctor.getDoctorId());
 
-                // Log the SQL query with parameters
                 LOGGER.info("Executing SQL: " + sql + " with params: [" +
                         doctor.getSpecialty() + ", " +
                         doctor.getExperience() + ", " +
@@ -99,7 +86,6 @@ public class DoctorDAO {
         }
     }
 
-    // Add a method to check if a doctor exists
     private boolean doctorExists(int doctorId) {
         if (doctorId <= 0) {
             return false;
@@ -124,12 +110,6 @@ public class DoctorDAO {
         return false;
     }
 
-    /**
-     * Check if a department exists in the database
-     *
-     * @param departmentId The department ID to check
-     * @return true if department exists, false otherwise
-     */
     private boolean isDepartmentExists(int departmentId) {
         if (departmentId <= 0) {
             return false;
@@ -154,12 +134,6 @@ public class DoctorDAO {
         return false;
     }
 
-    /**
-     * Retrieves a doctor by ID
-     *
-     * @param doctorId The doctor ID
-     * @return Doctor object if found, null otherwise
-     */
     public Doctor getDoctorById(int doctorId) {
         String sql = "SELECT * FROM doctor WHERE doctor_id = ?";
         Doctor doctor = null;
@@ -186,12 +160,6 @@ public class DoctorDAO {
         return doctor;
     }
 
-    /**
-     * Retrieves a doctor by user ID
-     *
-     * @param userId The user ID associated with the doctor
-     * @return Doctor object if found, null otherwise
-     */
     public Doctor getDoctorByUserId(int userId) {
         String sql = "SELECT * FROM doctor WHERE user_id = ?";
         Doctor doctor = null;

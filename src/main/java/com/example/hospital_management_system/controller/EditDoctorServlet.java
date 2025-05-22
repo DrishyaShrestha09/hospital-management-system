@@ -17,7 +17,6 @@ public class EditDoctorServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Check if user is authenticated and is an admin
         if (!AuthService.isAdmin(request)) {
             response.sendRedirect(request.getContextPath() + "/LoginServlet");
             return;
@@ -47,7 +46,6 @@ public class EditDoctorServlet extends HttpServlet {
         try {
             int doctorId = Integer.parseInt(doctorIdStr);
 
-            // Call service method to update doctor
             boolean success = AdminService.updateDoctor(doctorId, name, specialty, email);
 
             if (success) {
@@ -65,13 +63,11 @@ public class EditDoctorServlet extends HttpServlet {
             LOGGER.log(Level.SEVERE, "Error updating doctor", e);
         }
 
-        // Redirect back to admin page
         response.sendRedirect(request.getContextPath() + "/AdminServlet");
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Redirect GET requests to the admin page
         response.sendRedirect(request.getContextPath() + "/AdminServlet");
     }
 }

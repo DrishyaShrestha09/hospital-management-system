@@ -29,12 +29,6 @@ public class PatientProfileDAO {
         return false;
     }
 
-    /**
-     * Updates a patient's basic information in the users table
-     *
-     * @param user The user object containing updated information
-     * @return true if update was successful, false otherwise
-     */
     public boolean updatePatientBasicInfo(Users user) {
         String sql = "UPDATE users SET user_name = ?, user_phone = ?, user_address = ?, user_gender = ? WHERE user_id = ?";
 
@@ -56,17 +50,6 @@ public class PatientProfileDAO {
         }
     }
 
-    /**
-     * Updates a patient's medical information in the patient_medical_info table
-     *
-     * @param userId The user ID of the patient
-     * @param dateOfBirth The patient's date of birth
-     * @param bloodGroup The patient's blood group
-     * @param emergencyContact Emergency contact information
-     * @param allergies Patient's allergies
-     * @param medicalConditions Patient's medical conditions
-     * @return true if update was successful, false otherwise
-     */
     public boolean updatePatientMedicalInfo(int userId, String dateOfBirth, String bloodGroup,
                                             String emergencyContact, String allergies, String medicalConditions) {
         // First check if the record exists
@@ -102,7 +85,6 @@ public class PatientProfileDAO {
                             return updateStmt.executeUpdate() > 0;
                         }
                     } else {
-                        // Insert new record
                         try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
                             insertStmt.setInt(1, patientId);
                             insertStmt.setString(2, dateOfBirth);
@@ -124,12 +106,6 @@ public class PatientProfileDAO {
         return false;
     }
 
-    /**
-     * Gets patient medical information by user ID
-     *
-     * @param userId The user ID of the patient
-     * @return A map containing the patient's medical information
-     */
     public java.util.Map<String, String> getPatientMedicalInfo(int userId) {
         java.util.Map<String, String> medicalInfo = new java.util.HashMap<>();
 

@@ -67,7 +67,6 @@ public class PatientProfileServlet extends HttpServlet {
                 }
 
                 if (phone != null && !phone.trim().isEmpty()) {
-                    // Simple phone validation - adjust as needed for your requirements
                     if (!phone.matches("\\d{10,15}")) {
                         errorMessage.append("Phone number must be 10-15 digits. ");
                     }
@@ -79,7 +78,6 @@ public class PatientProfileServlet extends HttpServlet {
                 user.setAddress(address);
                 user.setGender(gender);
 
-                // Create a map to hold the medical info for redisplay in case of errors
                 Map<String, String> medicalInfo = new java.util.HashMap<>();
                 medicalInfo.put("dateOfBirth", dateOfBirth);
                 medicalInfo.put("bloodGroup", bloodGroup);
@@ -100,12 +98,10 @@ public class PatientProfileServlet extends HttpServlet {
                 PatientProfileDAO patientDAO = new PatientProfileDAO();
                 boolean basicInfoUpdated = patientDAO.updatePatientBasicInfo(user);
 
-                // Log the update attempt
                 LOGGER.info("Basic info update result: " + basicInfoUpdated);
 
                 boolean medicalInfoUpdated = true;
 
-                // Only try to update medical info if we have the patient_medical_info table
                 try {
                     medicalInfoUpdated = patientDAO.updatePatientMedicalInfo(
                             user.getUserId(), dateOfBirth, bloodGroup, emergencyContact, allergies, medicalConditions);
@@ -131,7 +127,7 @@ public class PatientProfileServlet extends HttpServlet {
                     Map<String, String> updatedMedicalInfo = patientDAO.getPatientMedicalInfo(user.getUserId());
                     request.setAttribute("medicalInfo", updatedMedicalInfo);
                 } catch (Exception e) {
-                    // If we can't get medical info, just use what was submitted
+
                     request.setAttribute("medicalInfo", medicalInfo);
                 }
 
@@ -139,7 +135,6 @@ public class PatientProfileServlet extends HttpServlet {
                 LOGGER.log(Level.SEVERE, "Error updating patient profile", e);
                 request.setAttribute("errorMessage", "An unexpected error occurred. Please try again.");
 
-                // Create empty medical info map to avoid JSP errors
                 Map<String, String> emptyMedicalInfo = new java.util.HashMap<>();
                 request.setAttribute("medicalInfo", emptyMedicalInfo);
             }
@@ -147,7 +142,6 @@ public class PatientProfileServlet extends HttpServlet {
             // Set the patient attribute for the JSP
             request.setAttribute("patient", user);
 
-            // Forward back to the profile page
             request.getRequestDispatcher("/view/pagesJsp/patient/patientProfile.jsp").forward(request, response);
         } else {
             response.sendRedirect("LoginServlet");

@@ -25,7 +25,6 @@
   </div>
 </nav>
 
-<!-- Responsive toggle script -->
 <script>
   function toggleMenu() {
     const navMenu = document.getElementById("navMenu");

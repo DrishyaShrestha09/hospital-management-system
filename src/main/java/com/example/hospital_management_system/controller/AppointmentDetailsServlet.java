@@ -21,16 +21,13 @@ public class AppointmentDetailsServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Check if user is authenticated and is a doctor
+       
         if (AuthService.isAuthenticated(request) && AuthService.isDoctor(request)) {
             try {
-                // Get appointment ID from request parameter
                 int appointmentId = Integer.parseInt(request.getParameter("appointmentId"));
 
-                // Get appointment details from service
                 Map<String, String> appointmentDetails = AppointmentService.getInstance().getAppointmentDetails(appointmentId);
 
-                // Convert to JSON manually
                 StringBuilder jsonBuilder = new StringBuilder();
                 jsonBuilder.append("{");
                 boolean first = true;
@@ -45,7 +42,6 @@ public class AppointmentDetailsServlet extends HttpServlet {
                 }
                 jsonBuilder.append("}");
 
-                // Set response type and write JSON
                 response.setContentType("application/json");
                 response.setCharacterEncoding("UTF-8");
                 PrintWriter out = response.getWriter();

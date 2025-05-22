@@ -64,7 +64,6 @@ public class DeleteDoctorServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // For simplicity, we'll just call doGet
         doGet(request, response);
     }
 }

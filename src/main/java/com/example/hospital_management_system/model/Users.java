@@ -99,12 +99,6 @@ public class Users {
         this.profile = profile;
     }
 
-    /**
-     * Verifies the given plain password against the hashed password.
-     *
-     * @param inputPassword the plain password entered by user
-     * @return true if password matches, false otherwise
-     */
     public boolean verifyPassword(String inputPassword) {
         if (inputPassword == null || this.password == null) {
             return false;
