@@ -16,27 +16,21 @@ public class DoctorScheduleServlet extends HttpServlet {
             // Get the user from the session
             Users user = AuthService.getCurrentUser(request);
 
-            // Set user attribute and forward to doctor's dashboard
             request.setAttribute("user", user);
             request.getRequestDispatcher("/view/pagesJsp/doctor/schedule.jsp").forward(request, response);
         } else {
-            // Redirect unauthenticated users or non-doctors to login
             response.sendRedirect("LoginServlet");
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Check if the user is authenticated and is a doctor
         if (AuthService.isAuthenticated(request) && AuthService.isDoctor(request)) {
-            // Get the user from the session
             Users user = AuthService.getCurrentUser(request);
 
-            // Set user attribute and forward to doctor's dashboard
             request.setAttribute("user", user);
             request.getRequestDispatcher("/view/pagesJsp/doctor/schedule.jsp").forward(request, response);
         } else {
-            // Redirect unauthenticated users or non-doctors to login
             response.sendRedirect("LoginServlet");
         }
     }

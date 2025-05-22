@@ -33,7 +33,7 @@ public class UpdateAppointmentStatusServlet extends HttpServlet {
             // Get parameters from request
             String appointmentIdStr = request.getParameter("appointmentId");
             String status = request.getParameter("status");
-            String notes = request.getParameter("notes"); // Optional notes
+            String notes = request.getParameter("notes");
 
             // Validate parameters
             if (appointmentIdStr == null || status == null || appointmentIdStr.isEmpty() || status.isEmpty()) {

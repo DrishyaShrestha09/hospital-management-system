@@ -16,10 +16,6 @@ import java.util.logging.Logger;
 public class DepartmentDAO {
     private static final Logger LOGGER = Logger.getLogger(DepartmentDAO.class.getName());
 
-    /**
-     * Get all departments from the database
-     * @return List of department maps containing department_id and department_name
-     */
     public List<Map<String, Object>> getAllDepartments() {
         List<Map<String, Object>> departments = new ArrayList<>();
 
@@ -42,11 +38,6 @@ public class DepartmentDAO {
         return departments;
     }
 
-    /**
-     * Get a department by its ID
-     * @param departmentId The ID of the department to retrieve
-     * @return Map containing department_id and department_name, or null if not found
-     */
     public Map<String, Object> getDepartmentById(int departmentId) {
         try (Connection conn = DBConnectionUtils.getConnection();
              PreparedStatement stmt = conn.prepareStatement("SELECT department_id, department_name FROM department WHERE department_id = ?")) {
@@ -68,11 +59,6 @@ public class DepartmentDAO {
         return null;
     }
 
-    /**
-     * Add a new department
-     * @param departmentName The name of the department to add
-     * @return true if the department was added successfully, false otherwise
-     */
     public boolean addDepartment(String departmentName) {
         try (Connection conn = DBConnectionUtils.getConnection();
              PreparedStatement stmt = conn.prepareStatement("INSERT INTO department (department_name) VALUES (?)")) {
@@ -88,11 +74,6 @@ public class DepartmentDAO {
         }
     }
 
-    /**
-     * Check if a department exists by ID
-     * @param departmentId The ID of the department to check
-     * @return true if the department exists, false otherwise
-     */
     public boolean departmentExists(int departmentId) {
         try (Connection conn = DBConnectionUtils.getConnection();
              PreparedStatement stmt = conn.prepareStatement("SELECT 1 FROM department WHERE department_id = ?")) {

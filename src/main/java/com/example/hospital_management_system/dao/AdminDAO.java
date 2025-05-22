@@ -92,14 +92,6 @@ public class AdminDAO {
         return user;
     }
 
-    /**
-     * Update a doctor's information
-     * @param doctorId The doctor ID to update
-     * @param name The new name
-     * @param specialty The new specialty
-     * @param email The new email
-     * @return true if update was successful, false otherwise
-     */
     public boolean updateDoctor(int doctorId, String name, String specialty, String email) {
         Connection conn = null;
         boolean success = false;
@@ -179,13 +171,7 @@ public class AdminDAO {
         return success;
     }
 
-    /**
-     * Delete a doctor by doctor ID - completely removes the doctor from the system
-     * @param doctorId The doctor ID to delete
-     * @return true if deletion was successful, false otherwise
-     */
     public boolean deleteDoctor(int doctorId) {
-        // First, get the user_id associated with this doctor
         int userId = getUserIdByDoctorId(doctorId);
         if (userId <= 0) {
             LOGGER.severe("Could not find user ID for doctor ID: " + doctorId);
@@ -200,14 +186,12 @@ public class AdminDAO {
         try {
             conn = DBConnectionUtils.getConnection();
 
-            // Important: Disable auto-commit to use transactions
             conn.setAutoCommit(false);
             LOGGER.info("Transaction started - auto-commit disabled");
 
             // Print the current database state for debugging
             printDoctorInfo(conn, doctorId, userId);
 
-            // 1. First check and delete appointment_status records
             String checkAppointmentStatusSql =
                     "SELECT COUNT(*) FROM appointment_status WHERE appointment_id IN " +
                             "(SELECT appointment_id FROM appointment WHERE doctor_id = ?)";
@@ -231,7 +215,6 @@ public class AdminDAO {
                 }
             }
 
-            // 2. Delete appointments for this doctor
             String deleteAppointmentsSql = "DELETE FROM appointment WHERE doctor_id = ?";
             try (PreparedStatement stmt = conn.prepareStatement(deleteAppointmentsSql)) {
                 stmt.setInt(1, doctorId);
@@ -239,7 +222,6 @@ public class AdminDAO {
                 LOGGER.info("Deleted " + appointmentsDeleted + " appointments for doctor ID: " + doctorId);
             }
 
-            // 3. Delete the doctor record
             String deleteDoctorSql = "DELETE FROM doctor WHERE doctor_id = ?";
             try (PreparedStatement stmt = conn.prepareStatement(deleteDoctorSql)) {
                 stmt.setInt(1, doctorId);
@@ -253,7 +235,6 @@ public class AdminDAO {
                 LOGGER.info("Deleted doctor record for doctor ID: " + doctorId);
             }
 
-            // 4. COMPLETELY DELETE the user record instead of just changing the role
             String deleteUserSql = "DELETE FROM users WHERE user_id = ?";
             try (PreparedStatement stmt = conn.prepareStatement(deleteUserSql)) {
                 stmt.setInt(1, userId);
@@ -267,9 +248,7 @@ public class AdminDAO {
                 LOGGER.info("Completely deleted user record for user ID: " + userId);
             }
 
-            // Verify the deletion
             if (verifyDoctorDeleted(conn, doctorId, userId)) {
-                // If we got here, everything succeeded
                 conn.commit();
                 LOGGER.info("Transaction committed successfully - doctor completely deleted from system");
                 success = true;
@@ -304,11 +283,7 @@ public class AdminDAO {
         return success;
     }
 
-    /**
-     * Print doctor and user information for debugging
-     */
     private void printDoctorInfo(Connection conn, int doctorId, int userId) throws SQLException {
-        // Check doctor record
         String checkDoctorSql = "SELECT * FROM doctor WHERE doctor_id = ?";
         try (PreparedStatement stmt = conn.prepareStatement(checkDoctorSql)) {
             stmt.setInt(1, doctorId);
@@ -338,9 +313,6 @@ public class AdminDAO {
         }
     }
 
-    /**
-     * Verify that the doctor and user records are actually deleted
-     */
     private boolean verifyDoctorDeleted(Connection conn, int doctorId, int userId) throws SQLException {
         boolean doctorDeleted = true;
         boolean userDeleted = true;
@@ -374,11 +346,6 @@ public class AdminDAO {
         return doctorDeleted && userDeleted;
     }
 
-    /**
-     * Get user ID by doctor ID
-     * @param doctorId The doctor ID
-     * @return The user ID or -1 if not found
-     */
     private int getUserIdByDoctorId(int doctorId) {
         String sql = "SELECT user_id FROM doctor WHERE doctor_id = ?";
 
