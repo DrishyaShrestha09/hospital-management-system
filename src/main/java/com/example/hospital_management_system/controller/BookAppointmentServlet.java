@@ -57,7 +57,7 @@ public class BookAppointmentServlet extends HttpServlet {
                 int doctorId = Integer.parseInt(doctorIdStr);
                 Date appointmentDate = Date.valueOf(dateStr);
 
-                // Call DAO to save the appointment
+              
                 AppointmentDAO appointmentDAO = new AppointmentDAO();
                 boolean isBooked = appointmentDAO.bookAppointment(userId, doctorId, appointmentDate, reason, timeSlot);
 
@@ -74,7 +74,6 @@ public class BookAppointmentServlet extends HttpServlet {
                 request.setAttribute("error", "An unexpected error occurred. Please try again.");
             }
 
-            // Forward back to the booking page (with either message or error)
             request.setAttribute("user", user);
 
             // Fetch available doctors with their names again for redisplay
@@ -83,7 +82,7 @@ public class BookAppointmentServlet extends HttpServlet {
 
             request.getRequestDispatcher("/view/pagesJsp/patient/book-appointment.jsp").forward(request, response);
         } else {
-            // If not authenticated, redirect to login
+            // If not authenticated, redirect to login page
             response.sendRedirect("LoginServlet");
         }
     }

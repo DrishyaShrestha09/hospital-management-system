@@ -3,18 +3,10 @@ package com.example.hospital_management_system.utils;
 import org.mindrot.jbcrypt.BCrypt;
 import java.util.logging.Logger;
 
-/**
- * Utility class for password hashing and verification using BCrypt.
- */
 public class PasswordHashUtils {
     private static final Logger LOGGER = Logger.getLogger(PasswordHashUtils.class.getName());
 
-    /**
-     * Generate a hashed version of the plain password.
-     *
-     * @param plainPassword the plain password to be hashed
-     * @return the hashed password
-     */
+
     public static String hashPassword(String plainPassword) {
         if (plainPassword == null || plainPassword.isEmpty()) {
             LOGGER.warning("Attempted to hash null or empty password");
@@ -32,13 +24,6 @@ public class PasswordHashUtils {
         }
     }
 
-    /**
-     * Verify if the plain password matches the hashed one.
-     *
-     * @param plainPassword the plain password entered by the user
-     * @param hashedPassword the stored hashed password from the database
-     * @return true if the plain password matches the hashed one, false otherwise
-     */
     public static boolean verifyPassword(String plainPassword, String hashedPassword) {
         if (plainPassword == null || hashedPassword == null) {
             LOGGER.warning("Attempted to verify with null password");
@@ -56,12 +41,6 @@ public class PasswordHashUtils {
         }
     }
 
-    /**
-     * Check if a password is already hashed with BCrypt
-     *
-     * @param password the password to check
-     * @return true if the password is already hashed, false otherwise
-     */
     public static boolean isPasswordHashed(String password) {
         return password != null && password.startsWith("$2a$");
     }

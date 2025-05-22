@@ -5,7 +5,6 @@ CREATE TABLE IF NOT EXISTS department(
 );
 
 -- User Table
--- change profile form blob to string
 CREATE TABLE IF NOT EXISTS users(
                                     user_id INT AUTO_INCREMENT PRIMARY KEY,
                                     user_name VARCHAR(200) NOT NULL,

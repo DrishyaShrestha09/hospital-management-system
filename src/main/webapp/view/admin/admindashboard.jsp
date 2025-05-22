@@ -207,11 +207,9 @@
     List<Map<String, Object>> patientsWithAppointments = (List<Map<String, Object>>) request.getAttribute("patientsWithAppointments");
     List<Map<String, Object>> doctors = (List<Map<String, Object>>) request.getAttribute("doctors");
 
-    // Get messages from session and then remove them
     String successMessage = (String) session.getAttribute("successMessage");
     String errorMessage = (String) session.getAttribute("errorMessage");
 
-    // Clear the session attributes after retrieving them
     session.removeAttribute("successMessage");
     session.removeAttribute("errorMessage");
 %>

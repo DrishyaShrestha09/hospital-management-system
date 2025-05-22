@@ -15,11 +15,6 @@ import java.util.logging.Logger;
 public class UserDAO {
     private static final Logger LOGGER = Logger.getLogger(UserDAO.class.getName());
 
-    /**
-     * Register a new user in the database
-     * @param user The user to register
-     * @return The generated user ID, or -1 if registration failed
-     */
     public static int registerUser(Users user) {
         String sql = "INSERT INTO users (user_name, user_email, user_password, role) VALUES (?, ?, ?, ?)";
 
@@ -64,11 +59,6 @@ public class UserDAO {
         }
     }
 
-    /**
-     * Get a user by their email address
-     * @param email The email address to search for
-     * @return The user if found, null otherwise
-     */
     public static Users getUserByEmail(String email) {
         String sql = "SELECT * FROM users WHERE user_email = ?";
 
@@ -93,11 +83,6 @@ public class UserDAO {
         return null;
     }
 
-    /**
-     * Get a user by their ID
-     * @param userId The ID of the user to retrieve
-     * @return The user if found, null otherwise
-     */
     public static Users getUserById(int userId) {
         String sql = "SELECT * FROM users WHERE user_id = ?";
 
@@ -122,41 +107,30 @@ public class UserDAO {
         return null;
     }
 
-    /**
-     * Update a user's information in the database
-     * @param user The user with updated information
-     * @return true if the update was successful, false otherwise
-     */
     public static boolean updateUser(Users user) {
-        // Log the user object for debugging
         LOGGER.info("Updating user: ID=" + user.getUserId() +
                 ", Name=" + user.getName() +
                 ", Email=" + user.getEmail());
 
-        // First check if user exists
         if (!userExists(user.getUserId())) {
             LOGGER.severe("User with ID " + user.getUserId() + " does not exist");
             return false;
         }
 
-        // Get the current user from the database to compare
         Users currentUser = getUserById(user.getUserId());
         if (currentUser == null) {
             LOGGER.severe("Failed to retrieve current user data for ID: " + user.getUserId());
             return false;
         }
 
-        // If password is not being changed, use the existing password
         if (user.getPassword() == null || user.getPassword().isEmpty()) {
             user.setPassword(currentUser.getPassword());
             LOGGER.info("Using existing password for user: " + user.getUserId());
         }
 
-        // Use a simpler SQL query to avoid potential issues
         String sql = "UPDATE users SET user_name = ?, user_email = ?, user_password = ?, " +
                 "user_phone = ?, user_address = ?, user_gender = ? WHERE user_id = ?";
 
-        // If profile picture is provided, use a different query
         if (user.getProfile() != null && user.getProfile().length > 0) {
             sql = "UPDATE users SET user_name = ?, user_email = ?, user_password = ?, " +
                     "user_phone = ?, user_address = ?, user_gender = ?, profile = ? WHERE user_id = ?";
@@ -170,7 +144,6 @@ public class UserDAO {
             stmt.setString(1, user.getName());
             stmt.setString(2, user.getEmail());
 
-            // Check if the password needs to be hashed before storing
             String passwordToStore = user.getPassword();
             if (!PasswordHashUtils.isPasswordHashed(passwordToStore)) {
                 passwordToStore = PasswordHashUtils.hashPassword(passwordToStore);
@@ -189,7 +162,6 @@ public class UserDAO {
                 stmt.setInt(7, user.getUserId());
             }
 
-            // Execute the update
             int rowsAffected = stmt.executeUpdate();
             LOGGER.info("Rows affected by update: " + rowsAffected);
 
@@ -207,11 +179,6 @@ public class UserDAO {
         }
     }
 
-    /**
-     * Check if a user exists in the database
-     * @param userId The ID of the user to check
-     * @return true if the user exists, false otherwise
-     */
     private static boolean userExists(int userId) {
         if (userId <= 0) {
             return false;
@@ -236,12 +203,6 @@ public class UserDAO {
         return false;
     }
 
-    /**
-     * Map a ResultSet to a User object
-     * @param rs The ResultSet containing user data
-     * @return A populated User object
-     * @throws SQLException If there's an error accessing the ResultSet
-     */
     private static Users mapResultSetToUser(ResultSet rs) throws SQLException {
         Users user = new Users();
         user.setUserId(rs.getInt("user_id"));

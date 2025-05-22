@@ -27,8 +27,8 @@ public class RegisterServlet extends HttpServlet {
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         String userType = request.getParameter("userType");
-        String phone = request.getParameter("phone");      // assuming these inputs exist
-        String address = request.getParameter("address");  // otherwise, keep them empty
+        String phone = request.getParameter("phone");
+        String address = request.getParameter("address"); 
         String gender = request.getParameter("gender");
 
         // Set user object
@@ -40,7 +40,7 @@ public class RegisterServlet extends HttpServlet {
         user.setPhone(phone);
         user.setAddress(address);
         user.setGender(gender);
-        user.setProfile(null); // no profile image on registration
+        user.setProfile(null);
 
         try {
             Users.Role role = Users.Role.valueOf(userType.toUpperCase());
@@ -57,7 +57,7 @@ public class RegisterServlet extends HttpServlet {
         if (userId > 0) {
             // Based on role, insert into doctor or patient table
             if (user.getRole() == Users.Role.DOCTOR) {
-                // For now default values — or retrieve from form if needed
+
                 int experience = 0;
                 String specialty = "";
              // default department for new doctor

@@ -23,7 +23,7 @@ public class AdminServlet extends HttpServlet {
             if (user != null) {
                 request.setAttribute("currentUser", user);
 
-                // Fetch patient and doctor data
+                // Fetching patient and doctor data
                 List<Map<String, Object>> patients = AdminService.getPatientsWithAppointmentCount();
                 List<Map<String, Object>> doctors = AdminService.getAllDoctors();
 
@@ -40,7 +40,6 @@ public class AdminServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // For now, delegate POST to GET
         doGet(request, response);
     }
 }
